@@ -1215,6 +1215,63 @@
             );
         };
 
+        const AuthPage = () => {
+            const [isLogin, setIsLogin] = useState(true);
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleAuth = async (e) => {
+                e.preventDefault();
+                setError('');
+                setLoading(true);
+                try {
+                    if (isLogin) {
+                        await auth.signInWithEmailAndPassword(email, password);
+                    } else {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                    }
+                } catch (err) {
+                    setError(err.message);
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="flex-1 flex items-center justify-center relative z-20">
+                    <div className="qx-card w-full max-w-md p-8 backdrop-blur-xl bg-void/80 border border-acid/20">
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl font-display font-bold text-white mb-2">QUANT<span className="text-acid">X</span></h2>
+                            <p className="text-gray-400 font-mono text-xs tracking-widest uppercase">{isLogin ? 'SECURE TERMINAL ACCESS' : 'INITIALIZE NEURAL LINK'}</p>
+                        </div>
+                        
+                        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-xs rounded font-mono">{error}</div>}
+                        
+                        <form onSubmit={handleAuth} className="space-y-4">
+                            <div>
+                                <label className="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-widest">Operator ID (Email)</label>
+                                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full bg-black/50 border border-gray-700 p-3 rounded-lg text-white focus:outline-none focus:border-acid transition-colors" placeholder="user@quantx.ai" />
+                            </div>
+                            <div>
+                                <label className="block text-gray-400 text-xs font-bold mb-2 uppercase tracking-widest">Access Key (Password)</label>
+                                <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="w-full bg-black/50 border border-gray-700 p-3 rounded-lg text-white focus:outline-none focus:border-acid transition-colors" placeholder="••••••••" />
+                            </div>
+                            <button type="submit" disabled={loading} className="w-full qx-btn-primary py-3 rounded-lg mt-4 text-sm font-bold tracking-widest bg-acid/20 hover:bg-acid/30">
+                                {loading ? 'PROCESSING...' : (isLogin ? 'AUTHENTICATE' : 'REGISTER')}
+                            </button>
+                        </form>
+                        
+                        <div className="mt-6 text-center">
+                            <button onClick={() => setIsLogin(!isLogin)} className="text-gray-500 text-xs font-mono hover:text-acid transition-colors">
+                                {isLogin ? 'REQUEST NEW TERMINAL ACCESS' : 'RETURN TO AUTHENTICATION'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const ChartingEngine = () => {
             const [data, setData] = useState([]);
             useEffect(() => {
