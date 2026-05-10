@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuantX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Share+Tech+Mono&display=swap"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+
+/* ─── INTRO SCREENS ─────────────────────────────── */
+#intro{
+  position:fixed;inset:0;z-index:300;
+  background:#000;pointer-events:all;
+  opacity:1;transition:opacity 1.1s cubic-bezier(.4,0,.2,1);
+}
+#intro.hidden{opacity:0;pointer-events:none}
+
+/* Screen 1 — black + typing */
+#s1{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:1;transition:opacity .7s ease;
+}
+#s1.fade{opacity:0}
+#intro-word{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(1.4rem,4.5vw,3.2rem);letter-spacing:.4em;
+  color:#39ff6a;text-transform:uppercase;position:relative;
+  text-shadow:0 0 30px rgba(57,255,106,.5),0 0 80px rgba(57,255,106,.2);
+}
+.cursor{
+  display:inline-block;width:3px;height:.9em;
+  background:#39ff6a;margin-left:6px;vertical-align:middle;
+  box-shadow:0 0 8px #39ff6a;
+  animation:blink .65s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ─── LOADING PAGE ──────────────────────────────── */
+#c3d{position:fixed;inset:0;z-index:1}
+
+/* particle canvas overlay */
+#pCanvas{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;
+  transition:opacity 1.4s ease .3s;}
+#pCanvas.show{opacity:1}
+
+#ui{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+
+/* brand */
+#brand{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(3rem,7vw,5.5rem);letter-spacing:.25em;color:#fff;
+  text-shadow:0 0 20px rgba(57,255,106,.6),0 0 60px rgba(57,255,106,.25);
+  opacity:0;transform:scale(.7) translateY(40px);
+  transition:opacity 1.1s cubic-bezier(.22,1,.36,1),
+             transform 1.1s cubic-bezier(.22,1,.36,1);
+  position:relative;
+}
+#brand.show{opacity:1;transform:scale(1) translateY(0)}
+#brand b{color:#39ff6a}
+
+.g-copy{
+  position:absolute;inset:0;
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(3rem,7vw,5.5rem);letter-spacing:.25em;
+  color:#39ff6a;opacity:0;white-space:nowrap;
+}
+
+/* tagline */
+#tagline{
+  font-family:'Share Tech Mono',monospace;font-size:.56rem;
+  letter-spacing:.32em;color:rgba(57,255,106,.45);text-transform:uppercase;
+  margin-top:8px;
+  opacity:0;transform:translateY(12px);
+  transition:opacity 1s ease .35s, transform 1s ease .35s;
+  white-space:nowrap;display:flex;align-items:center;justify-content:center;
+}
+#tagline.show{opacity:1;transform:translateY(0)}
+#tagline .sep{color:rgba(57,255,106,.22);margin:0 .55em;font-size:.45rem;}
+
+/* corner brackets */
+.corner{
+  position:fixed;width:55px;height:55px;
+  border-color:rgba(57,255,106,.35);border-style:solid;
+  opacity:0;transition:opacity .9s ease;
+}
+.c-tl{top:22px;left:22px;border-width:2px 0 0 2px}
+.c-tr{top:22px;right:22px;border-width:2px 2px 0 0}
+.c-bl{bottom:22px;left:22px;border-width:0 0 2px 2px}
+.c-br{bottom:22px;right:22px;border-width:0 2px 2px 0}
+.corner.show{opacity:1}
+
+/* animated bracket lines */
+.c-tl::before,.c-tl::after,
+.c-tr::before,.c-tr::after,
+.c-bl::before,.c-bl::after,
+.c-br::before,.c-br::after{
+  content:'';position:absolute;background:rgba(57,255,106,.18);
+}
+.c-tl::before,.c-tr::before,.c-bl::before,.c-br::before{
+  width:1px;top:0;bottom:0;
+}
+.c-tl::after,.c-tr::after,.c-bl::after,.c-br::after{
+  height:1px;left:0;right:0;
+}
+.c-tl::before,.c-bl::before{left:0}
+.c-tr::before,.c-br::before{right:0}
+.c-tl::after,.c-tr::after{top:0}
+.c-bl::after,.c-br::after{bottom:0}
+
+/* scan line */
+.scan{
+  position:fixed;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(57,255,106,.1),transparent);
+  top:0;z-index:11;opacity:0;transition:opacity .9s ease;
+  animation:scanH 6s linear infinite;will-change:transform;
+}
+.scan.show{opacity:1}
+@keyframes scanH{0%{transform:translateY(0)}100%{transform:translateY(100vh)}}
+
+/* horizontal data lines */
+.dataline{
+  position:fixed;left:0;right:0;height:1px;z-index:11;
+  opacity:0;transition:opacity .6s ease;
+  background:linear-gradient(90deg,transparent 0%,rgba(57,255,106,.06) 30%,rgba(57,255,106,.06) 70%,transparent 100%);
+}
+.dataline.show{opacity:1}
+#dl1{top:30%} #dl2{top:70%}
+
+/* progress bar zone */
+#bzone{
+  position:fixed;bottom:68px;left:50%;transform:translateX(-50%);
+  width:min(480px,82vw);z-index:12;
+  opacity:0;transform:translateX(-50%) translateY(18px);
+  transition:opacity .9s ease .5s, transform .9s cubic-bezier(.22,1,.36,1) .5s;
+  font-family:'Share Tech Mono',monospace;
+}
+#bzone.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#btop{display:flex;justify-content:space-between;font-size:.62rem;color:rgba(57,255,106,.55);letter-spacing:.15em;margin-bottom:7px}
+#btrack{width:100%;height:2px;background:rgba(57,255,106,.08);position:relative;overflow:visible}
+#bfill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#0a2e14,#39ff6a,#c0ffd8);
+  box-shadow:0 0 14px rgba(57,255,106,.7),0 0 36px rgba(57,255,106,.3);
+  transition:width .3s cubic-bezier(.4,0,.2,1);position:relative;
+}
+#bfill::after{
+  content:'';position:absolute;right:-1px;top:-5px;
+  width:2px;height:12px;background:#fff;
+  box-shadow:0 0 10px #fff,0 0 24px #39ff6a;
+}
+#sline{
+  font-size:.58rem;color:rgba(57,255,106,.4);
+  letter-spacing:.1em;margin-top:9px;min-height:1em;
+  opacity:0;transition:opacity .4s ease;
+}
+#sline.show{opacity:1}
+
+/* hex grid overlay */
+#hexGrid{
+  position:fixed;inset:0;z-index:3;pointer-events:none;
+  opacity:0;transition:opacity 2s ease 1s;
+}
+#hexGrid.show{opacity:1}
+
+/* copyright */
+#copy{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  z-index:20;opacity:0;transition:opacity 1s ease .8s;
+}
+#copy.show{opacity:.4}
+#copy img{height:20px;filter:brightness(1.6) drop-shadow(0 0 8px rgba(57,255,106,.5))}
+
+
+/* ─── BIRD LOGO ─────────────────────────────────── */
+#bird-wrap{
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;
+  opacity:0;transform:translateY(-18px) scale(.85);
+  transition:opacity 1.1s cubic-bezier(.22,1,.36,1) .1s,
+             transform 1.1s cubic-bezier(.22,1,.36,1) .1s;
+}
+#bird-wrap.show{opacity:1;transform:translateY(0) scale(1)}
+#bird-svg{
+  width:clamp(52px,7vw,80px);
+  height:auto;
+  filter:drop-shadow(0 0 12px rgba(57,255,106,.8))
+         drop-shadow(0 0 28px rgba(57,255,106,.4));
+  animation:birdFloat 3.8s ease-in-out infinite;
+}
+@keyframes birdFloat{
+  0%,100%{transform:translateY(0px) rotate(-1deg)}
+  50%{transform:translateY(-7px) rotate(1.5deg)}
+}
+
+
+/* ─── SCREEN 3: BIRD FLIGHT ──────────────────────────────── */
+#s3{
+  position:absolute;inset:0;
+  background:#000;
+  opacity:0; pointer-events:none;
+  transition:opacity .5s ease;
+  overflow:hidden;
+}
+
+/* The flying bird element */
+#cineBird{
+  position:absolute;
+  width:clamp(36px,5vw,56px);
+  height:auto;
+  opacity:0;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 0 18px rgba(57,255,106,1))
+         drop-shadow(0 0 40px rgba(57,255,106,.6))
+         drop-shadow(0 0 80px rgba(57,255,106,.3));
+  transform-origin:center center;
+}
+
+/* trail canvas behind bird */
+#trailCanvas{
+  position:absolute;inset:0;
+  pointer-events:none;
+}
+
+/* cinematic letterbox bars */
+#lbTop,#lbBot{
+  position:absolute;left:0;right:0;
+  height:10vh;background:#000;z-index:10;
+  transition:height .6s cubic-bezier(.4,0,.2,1);
+}
+#lbTop{top:0;}
+#lbBot{bottom:0;}
+
+/* speed lines canvas */
+#speedCanvas{
+  position:absolute;inset:0;
+  pointer-events:none;opacity:0;
+}
+
+/* flash & veil */
+#flash{position:fixed;inset:0;z-index:50;background:radial-gradient(circle, #c0ffd0 0%, #39ff6a 40%, #0a2e14 100%);opacity:0;pointer-events:none;transition:opacity 2.5s ease}
+#veil{position:fixed;inset:0;z-index:60;background:#000;opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+
+/* Ripple Effect */
+#ripple-wrap {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100; pointer-events: none;
+}
+.ripple {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid #39ff6a;
+  box-shadow: 0 0 15px #39ff6a, inset 0 0 15px #39ff6a;
+  opacity: 0;
+  width: 0; height: 0;
+}
+.ripple.active {
+  animation: rippleAnim 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes rippleAnim {
+  0% { width: 0; height: 0; opacity: 1; border-width: 4px; }
+  100% { width: 60vw; height: 60vw; opacity: 0; border-width: 1px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ CINEMATIC INTRO ═══ -->
+<div id="intro">
+  <div id="s1">
+    <div id="intro-word"><span id="itext"></span><span class="cursor"></span></div>
+  </div>
+  <!-- Screen 3: cinematic bird flight -->
+  <div id="s3">
+    <canvas id="trailCanvas"></canvas>
+    <canvas id="speedCanvas"></canvas>
+    <svg id="cineBird" viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#39ff6a">
+        <path d="M48,35 C44,30 38,27 30,29 C22,31 14,37 8,43
+                 C14,39 21,37 28,38 C34,39 40,43 45,45
+                 C49,47 53,46 56,43 C59,40 61,37 63,34
+                 C67,29 72,26 78,28 C74,31 70,35 68,40
+                 C66,44 65,49 66,54 C69,48 72,43 77,39
+                 C82,35 88,33 94,34 C88,30 81,27 74,26
+                 C67,25 60,28 55,34 Z"/>
+        <circle cx="28" cy="30" r="5"/>
+        <path d="M57,32 C62,24 70,19 80,18 C74,24 68,30 64,36 Z"/>
+        <path d="M58,44 C65,50 74,53 85,51 C78,47 71,43 66,39 Z"/>
+        <path d="M67,52 C70,57 75,62 80,64 C76,58 72,53 70,47 Z"/>
+        <path d="M68,50 C74,52 82,50 90,46 C83,46 76,48 72,48 Z"/>
+      </g>
+    </svg>
+    <div id="lbTop"></div>
+    <div id="lbBot"></div>
+    <div id="ripple-wrap">
+      <div class="ripple"></div>
+      <div class="ripple"></div>
+      <div class="ripple"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LOADING PAGE ═══ -->
+<canvas id="c3d"></canvas>
+<canvas id="pCanvas"></canvas>
+<svg id="hexGrid" xmlns="http://www.w3.org/2000/svg"></svg>
+
+<div class="corner c-tl" id="ctl"></div>
+<div class="corner c-tr" id="ctr"></div>
+<div class="corner c-bl" id="cbl"></div>
+<div class="corner c-br" id="cbr"></div>
+<div class="scan" id="scan"></div>
+<div class="dataline" id="dl1"></div>
+<div class="dataline" id="dl2"></div>
+
+<div id="ui">
+  <div style="text-align:center">
+    <div id="bird-wrap">
+      <svg id="bird-svg" viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#39ff6a">
+          <!-- Main body, angled upper-left -->
+          <path d="M48,35 C44,30 38,27 30,29 C22,31 14,37 8,43
+                   C14,39 21,37 28,38 C34,39 40,43 45,45
+                   C49,47 53,46 56,43 C59,40 61,37 63,34
+                   C67,29 72,26 78,28 C74,31 70,35 68,40
+                   C66,44 65,49 66,54 C69,48 72,43 77,39
+                   C82,35 88,33 94,34 C88,30 81,27 74,26
+                   C67,25 60,28 55,34 Z"/>
+          <!-- Small round head top-left -->
+          <circle cx="28" cy="30" r="5"/>
+          <!-- Upper wing tip extending up-right -->
+          <path d="M57,32 C62,24 70,19 80,18 C74,24 68,30 64,36 Z"/>
+          <!-- Lower wing tip sweeping down-right -->
+          <path d="M58,44 C65,50 74,53 85,51 C78,47 71,43 66,39 Z"/>
+          <!-- Forked tail top -->
+          <path d="M67,52 C70,57 75,62 80,64 C76,58 72,53 70,47 Z"/>
+          <!-- Forked tail bottom -->
+          <path d="M68,50 C74,52 82,50 90,46 C83,46 76,48 72,48 Z"/>
+        </g>
+      </svg>
+    </div>
+    <div style="position:relative;display:inline-block">
+      <div id="brand">QUANT<b>X</b>
+        <div class="g-copy" id="gc1">QUANTX</div>
+        <div class="g-copy" id="gc2">QUANTX</div>
+      </div>
+    </div>
+    <p id="tagline">
+      <span>Intelligent</span><span class="sep">|</span>
+      <span>Quantitative</span><span class="sep">|</span>
+      <span>Systems</span><span class="sep">|</span>
+      <span>AI-Powered</span><span class="sep">|</span>
+      <span>Real-Time</span><span class="sep">|</span>
+      <span>Algorithmic</span>
+    </p>
+  </div>
+</div>
+
+<div id="bzone">
+  <div id="btop"><span id="blbl">INITIALIZING</span><span id="bpct">0%</span></div>
+  <div id="btrack"><div id="bfill"></div></div>
+  <div id="sline">Calibrating quantum matrices_</div>
+</div>
+
+<div id="copy"><img src="data:image/png;base64,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" alt="© 2026 QuantX"/></div>
+<div id="flash"></div>
+<div id="veil"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   1. CINEMATIC INTRO
+═══════════════════════════════════════════════════ */
+(function runIntro(){
+  const intro  = document.getElementById('intro');
+  const s1     = document.getElementById('s1');
+  const itext  = document.getElementById('itext');
+
+  const word = 'introducing';
+  let idx = 0;
+
+  function type(){
+    if(idx < word.length){
+      itext.textContent += word[idx++];
+      const p = idx / word.length;
+      setTimeout(type, p < 0.25 ? 130 : p < 0.75 ? 65 : 115);
+    } else {
+      setTimeout(launchBirdFlight, 700);
+    }
+  }
+
+  function launchBirdFlight(){
+    const s3 = document.getElementById('s3');
+    const bird = document.getElementById('cineBird');
+    const trailCv = document.getElementById('trailCanvas');
+    const speedCv = document.getElementById('speedCanvas');
+    const tCtx = trailCv.getContext('2d');
+    const sCtx = speedCv.getContext('2d');
+
+    /* fade s1 → s3 */
+    s1.classList.add('fade');
+    setTimeout(()=>{
+      s3.style.opacity = '1';
+      bird.style.opacity = '1';
+    }, 350);
+
+    /* size canvases */
+    const W = window.innerWidth, H = window.innerHeight;
+    trailCv.width = speedCv.width = W;
+    trailCv.height = speedCv.height = H;
+
+    /* ── Bezier flight path ──────────────────────────────────
+       Start: far left, vertically centered
+       Control1: upper-left quarter (bird swoops up)
+       Control2: upper-right quarter (banking right)
+       End: screen center (where it "lands" into the loader)
+    ─────────────────────────────────────────────────────── */
+    const startX = -80, startY = H * 0.55;
+    const cp1x   = W  * 0.25, cp1y = H * 0.15;   // sweep upward
+    const cp2x   = W  * 0.65, cp2y = H * 0.30;   // arc right
+    const endX   = W  * 0.5,  endY = H * 0.5;    // center landing
+
+    let progress = 0;
+    const DURATION = 2200; // ms — total flight time
+    let startTime = null;
+    let prevX = startX, prevY = startY;
+    const trailPoints = [];
+
+    /* speed-line burst at launch */
+    function drawSpeedLines(alpha){
+      sCtx.clearRect(0,0,W,H);
+      sCtx.save();
+      const count = 28;
+      for(let i=0;i<count;i++){
+        const angle = (i/count)*Math.PI*2;
+        const len   = (60 + Math.random()*120) * alpha;
+        const cx = W/2, cy = H/2;
+        sCtx.beginPath();
+        sCtx.moveTo(cx + Math.cos(angle)*40, cy + Math.sin(angle)*40);
+        sCtx.lineTo(cx + Math.cos(angle)*(40+len), cy + Math.sin(angle)*(40+len));
+        sCtx.strokeStyle = `rgba(57,255,106,${0.35*alpha})`;
+        sCtx.lineWidth = 1 + Math.random()*1.5;
+        sCtx.stroke();
+      }
+      sCtx.restore();
+    }
+
+    function cubicBezier(t, p0, p1, p2, p3){
+      const u=1-t;
+      return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
+    }
+
+    function wingFlap(t){
+      /* returns scale-y for wing flap effect */
+      return 1 + Math.sin(t * Math.PI * 14) * 0.08;
+    }
+
+    function animateBird(ts){
+      if(!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      progress = Math.min(elapsed / DURATION, 1);
+
+      /* easing: ease-in then fast rush at end */
+      const eased = progress < 0.7
+        ? progress * progress * (1/0.49) * 0.7           // ease-in
+        : 0.7 + (progress - 0.7) * (1 + (progress-0.7)*4); // accelerate
+
+      const p = Math.min(eased, 1);
+
+      const bx = cubicBezier(p, startX, cp1x, cp2x, endX);
+      const by = cubicBezier(p, startY, cp1y, cp2y, endY);
+
+      /* angle: tangent of bezier */
+      const dp = Math.min(p + 0.01, 1);
+      const nx = cubicBezier(dp, startX, cp1x, cp2x, endX);
+      const ny = cubicBezier(dp, startY, cp1y, cp2y, endY);
+      const angle = Math.atan2(ny - by, nx - bx);
+
+      /* scale: starts small (distant), grows as it approaches */
+      const baseScale = 0.3 + p * 1.4;
+      const scaleY = baseScale * wingFlap(progress);
+
+      /* speed-blur: more at start and end rush */
+      const speed = Math.hypot(bx - prevX, by - prevY);
+      const blurAlpha = Math.min(speed / 18, 1);
+
+      /* position the SVG bird */
+      bird.style.left = (bx - 50) + 'px';
+      bird.style.top  = (by - 35) + 'px';
+      bird.style.transform = `rotate(${angle}rad) scaleX(${baseScale}) scaleY(${scaleY})`;
+      bird.style.filter = `drop-shadow(0 0 ${12+speed*2}px rgba(57,255,106,1))
+                           drop-shadow(0 0 ${30+speed*3}px rgba(57,255,106,.7))
+                           drop-shadow(0 0 80px rgba(57,255,106,.3))`;
+
+      /* draw glowing trail */
+      trailPoints.push({x:bx, y:by, a:1.0});
+      tCtx.clearRect(0,0,W,H);
+      for(let i=1;i<trailPoints.length;i++){
+        const pt = trailPoints[i];
+        const ppt = trailPoints[i-1];
+        pt.a = Math.max(0, pt.a - 0.018);
+        if(pt.a <= 0) continue;
+        const w = Math.max(1, (i/trailPoints.length) * 4);
+        tCtx.beginPath();
+        tCtx.moveTo(ppt.x, ppt.y);
+        tCtx.lineTo(pt.x, pt.y);
+        tCtx.strokeStyle = `rgba(57,255,106,${pt.a * 0.6})`;
+        tCtx.lineWidth = w;
+        tCtx.lineCap = 'round';
+        tCtx.shadowBlur = 12;
+        tCtx.shadowColor = '#39ff6a';
+        tCtx.stroke();
+        tCtx.shadowBlur = 0;
+      }
+      /* clean up faded trail points */
+      while(trailPoints.length > 0 && trailPoints[0].a <= 0) trailPoints.shift();
+
+      prevX = bx; prevY = by;
+
+      if(progress < 1){
+        requestAnimationFrame(animateBird);
+      } else {
+        /* bird reached center — impact flash + explode into loader */
+        bird.style.transition = 'opacity .25s ease, transform .3s ease';
+        bird.style.opacity = '0';
+        bird.style.transform += ' scale(3)';
+
+        // Trigger ripple
+        const ripples = document.querySelectorAll('.ripple');
+        ripples.forEach((r, i) => {
+          setTimeout(() => r.classList.add('active'), i * 150);
+        });
+
+        /* burst speed lines */
+        speedCv.style.opacity = '1';
+        let burst = 1.0;
+        function burstAnim(){
+          drawSpeedLines(burst);
+          burst -= 0.07;
+          if(burst > 0) requestAnimationFrame(burstAnim);
+          else { speedCv.style.opacity='0'; sCtx.clearRect(0,0,W,H); }
+        }
+        burstAnim();
+
+        /* big flash then reveal loader */
+        const fl = document.getElementById('flash');
+        fl.style.transition='none'; fl.style.opacity='1';
+        setTimeout(()=>{
+          fl.style.transition='opacity 2.5s ease-in-out';
+          fl.style.opacity='0';
+          s3.style.transition='opacity 1s ease';
+          s3.style.opacity='0';
+          setTimeout(()=>{
+            intro.classList.add('hidden');
+            setTimeout(()=>{ intro.style.display='none'; }, 2500);
+          }, 200);
+        }, 150);
+      }
+    }
+
+    setTimeout(()=>{ requestAnimationFrame(animateBird); }, 400);
+  }
+
+  setTimeout(type, 400);
+
+})();
+
+/* ═══════════════════════════════════════════════════
+   2. THREE.JS LOADING SCENE
+═══════════════════════════════════════════════════ */
+const W=()=>window.innerWidth, H=()=>window.innerHeight;
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c3d'),antialias:true});
+renderer.setSize(W(),H());
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0x000000,1);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60,W()/H(),.1,2000);
+camera.position.set(0,0,5);
+const clock  = new THREE.Clock();
+
+/* stars */
+const sg=new THREE.BufferGeometry();
+const sp=new Float32Array(3600*3);
+for(let i=0;i<3600*3;i++) sp[i]=(Math.random()-.5)*400;
+sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:.2,sizeAttenuation:true,transparent:true,opacity:.8})));
+
+/* galaxy bg */
+const bgGeo=new THREE.PlaneGeometry(30,20);
+const bgMat=new THREE.MeshBasicMaterial({color:0x000a02,transparent:true,opacity:0});
+const bgMesh=new THREE.Mesh(bgGeo,bgMat); bgMesh.position.z=-14; scene.add(bgMesh);
+new THREE.TextureLoader().load('https://wallpapers.com/images/hd/green-galaxy-c9o6izdyxk63yrlr.jpg',tx=>{
+  bgMat.map=tx; bgMat.color.set(0x333333); bgMat.opacity=.3; bgMat.needsUpdate=true;
+});
+
+/* dual-logo */
+let iconA=null,iconB=null,iconGroup=null;
+let logoAngle=0,lastFace=0,iconReady=false;
+const tl=new THREE.TextureLoader(); let texA=null,texB=null;
+
+function tryBuildIcons(){
+  if(!texA||!texB) return;
+  iconGroup=new THREE.Group();
+  
+  // Add a dark background plane behind the icons to boost contrast
+  const iconBgGeo = new THREE.CircleGeometry(1.8, 32);
+  const iconBgMat = new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:0.75});
+  const iconBgMesh = new THREE.Mesh(iconBgGeo, iconBgMat);
+  iconBgMesh.position.z = -0.1;
+  iconGroup.add(iconBgMesh);
+  
+  const mA=new THREE.MeshStandardMaterial({map:texA,transparent:true,opacity:0,alphaTest:0.01,metalness:.5,roughness:.3,emissive:new THREE.Color(0x88ffaa),emissiveIntensity:0,side:THREE.FrontSide});
+  const mB=new THREE.MeshStandardMaterial({map:texB,transparent:true,opacity:0,alphaTest:0.01,metalness:.5,roughness:.3,emissive:new THREE.Color(0x88ffaa),emissiveIntensity:0,side:THREE.FrontSide});
+  iconA=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),mA);
+  iconB=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),mB);
+  iconB.rotation.y=Math.PI;
+  iconGroup.add(iconA); iconGroup.add(iconB);
+  scene.add(iconGroup);
+  iconReady=true;
+  setTimeout(revealIcon,400);
+}
+
+tl.load('data:image/png;base64,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',tx=>{ tx.minFilter=THREE.LinearFilter; texA=tx; tryBuildIcons(); });
+tl.load('data:image/png;base64,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',tx=>{ tx.minFilter=THREE.LinearFilter; texB=tx; tryBuildIcons(); });
+
+/* lights */
+const keyL=new THREE.PointLight(0x39ff6a,5,14); scene.add(keyL);
+const rimL=new THREE.PointLight(0x00ffbb,2.5,10); rimL.position.set(-3,2,1); scene.add(rimL);
+scene.add(new THREE.AmbientLight(0x051005,1.5));
+
+/* wireframe cages */
+const cageMat=new THREE.MeshBasicMaterial({color:0x39ff6a,wireframe:true,transparent:true,opacity:.16});
+const cage1=new THREE.Mesh(new THREE.BoxGeometry(3.6,3.6,3.6),cageMat); scene.add(cage1);
+const cage2=new THREE.Mesh(new THREE.OctahedronGeometry(2.6,0),new THREE.MeshBasicMaterial({color:0x39ff6a,wireframe:true,transparent:true,opacity:.1})); scene.add(cage2);
+const cage3=new THREE.Mesh(new THREE.IcosahedronGeometry(3.0,0),new THREE.MeshBasicMaterial({color:0x39ff6a,wireframe:true,transparent:true,opacity:.06})); scene.add(cage3);
+
+/* torus rings */
+function ring(r,tube,rx,ry,rz,op){
+  const m=new THREE.Mesh(new THREE.TorusGeometry(r,tube,8,100),new THREE.MeshBasicMaterial({color:0x39ff6a,transparent:true,opacity:op}));
+  m.rotation.set(rx,ry,rz); scene.add(m); return m;
+}
+const r1=ring(1.8,.007,Math.PI/2,0,0,.5);
+const r2=ring(2.2,.005,Math.PI/3,Math.PI/6,0,.3);
+const r3=ring(2.7,.003,Math.PI/6,Math.PI/3,Math.PI/4,.18);
+const r4=ring(3.2,.002,0,0,Math.PI/5,.1);
+
+/* particles */
+const PN=900,pg=new THREE.BufferGeometry();
+const pp=new Float32Array(PN*3),pv=[];
+for(let i=0;i<PN;i++){
+  const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=3+Math.random()*4;
+  pp[i*3]=r*Math.sin(ph)*Math.cos(th); pp[i*3+1]=r*Math.sin(ph)*Math.sin(th); pp[i*3+2]=r*Math.cos(ph);
+  pv.push({th,ph,r,dth:(Math.random()-.5)*.009,dph:(Math.random()-.5)*.005});
+}
+pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0x39ff6a,size:.05,sizeAttenuation:true,transparent:true,opacity:.75}));
+scene.add(pts);
+
+/* shockwaves */
+const sw=[],swMats=[];
+for(let i=0;i<3;i++){
+  const mat=new THREE.MeshBasicMaterial({color:i===0?0x39ff6a:0xffffff,transparent:true,opacity:0,side:THREE.DoubleSide});
+  const m=new THREE.Mesh(new THREE.RingGeometry(.01,.06,80),mat);
+  scene.add(m); sw.push({mesh:m,r:0,active:false,speed:.12+i*.06,fade:i===0?1:.6}); swMats.push(mat);
+}
+function fireShockwaves(){ sw.forEach((s,i)=>setTimeout(()=>{s.r=0;s.active=true;},i*150)); }
+
+function doFlash(op=.6){
+  const f=document.getElementById('flash');
+  f.style.transition='none'; f.style.opacity=op;
+  requestAnimationFrame(()=>{f.style.transition='opacity .55s ease'; f.style.opacity=0;});
+}
+
+/* ═══════════════════════════════════════════════════
+   SMOOTH TRANSITION: intro → loading page
+   Called when intro overlay finishes fading
+═══════════════════════════════════════════════════ */
+function revealLoader(){
+  /* staggered cinematic entry of each UI layer */
+  setTimeout(()=>{
+    document.getElementById('pCanvas').classList.add('show');
+    document.getElementById('hexGrid').classList.add('show');
+    ['dl1','dl2'].forEach(id=>document.getElementById(id).classList.add('show'));
+  },0);
+
+  setTimeout(()=>{
+    ['ctl','ctr','cbl','cbr'].forEach((id,i)=>
+      setTimeout(()=>document.getElementById(id).classList.add('show'), i*120));
+  },200);
+
+  setTimeout(()=>{ document.getElementById('scan').classList.add('show'); },500);
+  setTimeout(()=>{ revealIcon(); },300);
+}
+
+function revealIcon(){
+  let t=0;
+  const iv=setInterval(()=>{
+    t+=.028;
+    const op=Math.min(t,1),em=op*.8;
+    if(iconA){ iconA.material.opacity=op; iconA.material.emissiveIntensity=em; }
+    if(iconB){ iconB.material.opacity=op; iconB.material.emissiveIntensity=em; }
+    if(t>=1) clearInterval(iv);
+  },20);
+  fireShockwaves(); doFlash(.5);
+  setTimeout(showUI,300);
+}
+
+function showUI(){
+  document.getElementById('bird-wrap').classList.add('show');
+  const br=document.getElementById('brand');
+  br.classList.add('show');
+  document.getElementById('tagline').classList.add('show');
+  document.getElementById('bzone').classList.add('show');
+  setTimeout(()=>{ document.getElementById('copy').classList.add('show'); },400);
+  setTimeout(()=>{ document.getElementById('sline').classList.add('show'); },600);
+  setTimeout(startGlitch,900);
+  setTimeout(startLoad,1200);
+}
+
+/* ─── Listen for intro fade completion ─── */
+document.getElementById('intro').addEventListener('transitionend', function(e){
+  if(e.propertyName==='opacity' && this.classList.contains('hidden')){
+    revealLoader();
+  }
+});
+/* Fallback in case transitionend misfires */
+setTimeout(()=>{
+  if(!document.getElementById('brand').classList.contains('show')) revealLoader();
+}, 4200);
+
+function startGlitch(){
+  const gc1=document.getElementById('gc1'),gc2=document.getElementById('gc2');
+  function g(){
+    const d=50+Math.random()*80;
+    gc1.style.opacity=.65; gc1.style.transform=`translateX(${(Math.random()-.5)*14}px)`;
+    gc1.style.clipPath=`polygon(0 ${20+Math.random()*30}%,100% ${20+Math.random()*30}%,100% ${50+Math.random()*25}%,0 ${50+Math.random()*25}%)`;
+    gc2.style.opacity=.35; gc2.style.transform=`translateX(${(Math.random()-.5)*-10}px)`;
+    gc2.style.filter=`hue-rotate(${Math.random()*90-45}deg)`;
+    setTimeout(()=>{gc1.style.opacity=0;gc2.style.opacity=0;},d);
+    setTimeout(g,1800+Math.random()*4000);
+  }
+  g();
+}
+
+const steps=[
+  [5,'BOOT','Engaging quantum drive_'],
+  [15,'CORE','Loading algorithmic core_'],
+  [27,'MESH','Establishing neural mesh_'],
+  [41,'MARKET','Synchronizing market feeds_'],
+  [55,'MODELS','Compiling predictive models_'],
+  [69,'RISK','Calibrating risk matrices_'],
+  [81,'PORTFOLIO','Building portfolio lattice_'],
+  [93,'EXECUTING','Optimizing execution paths_'],
+  [100,'ONLINE','QuantX systems online. Welcome._'],
+];
+let cur=0;
+function startLoad(){adv();}
+function adv(){
+  if(cur>=steps.length) return;
+  const [p,lb,msg]=steps[cur++];
+  document.getElementById('bfill').style.width=p+'%';
+  document.getElementById('bpct').textContent=p+'%';
+  document.getElementById('blbl').textContent=lb;
+  document.getElementById('sline').textContent=msg;
+  if(p===100){
+    setTimeout(()=>{
+      fireShockwaves(); doFlash(.9);
+      setTimeout(()=>{
+        const v=document.getElementById('veil');
+        v.style.opacity=1; v.style.pointerEvents='all';
+        setTimeout(()=>{
+          v.style.opacity=0; v.style.pointerEvents='none';
+          window.location.href = 'index.html';
+        },2200);
+      },700);
+    },600);
+  } else setTimeout(adv,380+Math.random()*480);
+}
+
+/* ═══════════════════════════════════════════════════
+   3. PARTICLE CANVAS (2D overlay sparkles)
+═══════════════════════════════════════════════════ */
+(function initParticles(){
+  const cv=document.getElementById('pCanvas');
+  const ctx=cv.getContext('2d');
+  cv.width=W(); cv.height=H();
+  window.addEventListener('resize',()=>{cv.width=W();cv.height=H();});
+
+  const particles=[];
+  for(let i=0;i<25;i++){
+    particles.push({
+      x:Math.random()*W(), y:Math.random()*H(),
+      vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+      r:Math.random()*1.4+.3,
+      a:Math.random(), da:(Math.random()-.5)*.012,
+      hue:100+Math.random()*40
+    });
+  }
+
+  function drawParticles(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      p.a+=p.da;
+      if(p.a<0||p.a>1) p.da*=-1;
+      if(p.x<0) p.x=cv.width; if(p.x>cv.width) p.x=0;
+      if(p.y<0) p.y=cv.height; if(p.y>cv.height) p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`hsla(${p.hue},100%,65%,${p.a*0.55})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+})();
+
+/* ═══════════════════════════════════════════════════
+   4. SVG HEX GRID (very subtle background pattern)
+═══════════════════════════════════════════════════ */
+(function buildHexGrid(){
+  const svg=document.getElementById('hexGrid');
+  svg.setAttribute('viewBox',`0 0 ${W()} ${H()}`);
+  svg.setAttribute('width',W()); svg.setAttribute('height',H());
+  const size=38, rows=Math.ceil(H()/(size*1.73))+1, cols=Math.ceil(W()/(size*2))+1;
+  let d='';
+  for(let row=0;row<rows;row++){
+    for(let col=0;col<cols;col++){
+      const cx=col*size*1.75+(row%2)*size*.875;
+      const cy=row*size*1.52;
+      const pts=[];
+      for(let a=0;a<6;a++){
+        const ang=Math.PI/180*(60*a-30);
+        pts.push(`${(cx+size*.45*Math.cos(ang)).toFixed(1)},${(cy+size*.45*Math.sin(ang)).toFixed(1)}`);
+      }
+      d+=`M${pts.join('L')}Z`;
+    }
+  }
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',d);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','rgba(57,255,106,0.04)');
+  path.setAttribute('stroke-width','1');
+  svg.appendChild(path);
+})();
+
+/* ═══════════════════════════════════════════════════
+   5. THREE.JS RENDER LOOP
+═══════════════════════════════════════════════════ */
+let t=0;
+(function loop(){
+  requestAnimationFrame(loop);
+  const dt=clock.getDelta(); t+=dt;
+
+  keyL.position.set(3.5*Math.sin(t*1.2),2.5*Math.cos(t*.8),2*Math.cos(t*1.4));
+
+  /* icon rotation — full 360° per icon before switch */
+  if(iconGroup && iconReady){
+    const spinSpeed=.004;
+    logoAngle+=spinSpeed;
+    iconGroup.rotation.y=logoAngle;
+    iconGroup.position.y=Math.sin(t*.9)*.12;
+
+    const phase=logoAngle%(Math.PI*2);
+    const edgeOn=Math.abs(phase-Math.PI)<spinSpeed*2;
+
+    if(edgeOn && lastFace===0){
+      lastFace=1; doFlash(.28); fireShockwaves();
+    } else if(!edgeOn && phase<Math.PI && lastFace===1){
+      lastFace=0; doFlash(.28); fireShockwaves();
+    }
+
+    const showA=(lastFace===0);
+    if(iconA) iconA.material.opacity=showA?1:0;
+    if(iconB) iconB.material.opacity=showA?0:1;
+    const em=1.0+.6*Math.sin(t*2.4);
+    if(iconA) iconA.material.emissiveIntensity=showA?em:0;
+    if(iconB) iconB.material.emissiveIntensity=showA?0:em;
+  }
+
+  cage1.rotation.x+=.003; cage1.rotation.y+=.004; cage1.rotation.z+=.0018;
+  cage2.rotation.x-=.0025; cage2.rotation.y+=.005; cage2.rotation.z-=.0032;
+  cage3.rotation.x+=.0018; cage3.rotation.y-=.0035; cage3.rotation.z+=.0025;
+
+  r1.rotation.z+=.007;
+  r2.rotation.x+=.004; r2.rotation.y+=.003;
+  r3.rotation.y-=.005; r3.rotation.z+=.004;
+  r4.rotation.x+=.0025; r4.rotation.z-=.003;
+
+  const pa=pg.attributes.position.array;
+  for(let i=0;i<PN;i++){
+    pv[i].th+=pv[i].dth; pv[i].ph+=pv[i].dph;
+    const {th,ph,r}=pv[i];
+    pa[i*3]=r*Math.sin(ph)*Math.cos(th);
+    pa[i*3+1]=r*Math.sin(ph)*Math.sin(th);
+    pa[i*3+2]=r*Math.cos(ph);
+  }
+  pg.attributes.position.needsUpdate=true;
+  pts.rotation.y+=.001;
+
+  sw.forEach(s=>{
+    if(!s.active) return;
+    s.r+=s.speed;
+    s.mesh.geometry.dispose();
+    const outerR=s.r+Math.max(.01,.35*(1-s.r/10));
+    s.mesh.geometry=new THREE.RingGeometry(s.r,outerR,80);
+    s.mesh.material.opacity=Math.max(0,s.fade*(1-s.r/10));
+    if(s.r>10){s.active=false;s.mesh.material.opacity=0;}
+  });
+
+  camera.position.z=5+.18*Math.sin(t*.38);
+  camera.position.x=.1*Math.sin(t*.25);
+  camera.lookAt(0,0,0);
+  renderer.render(scene,camera);
+})();
+
+window.addEventListener('resize',()=>{
+  renderer.setSize(W(),H());
+  camera.aspect=W()/H();
+  camera.updateProjectionMatrix();
+});
+</script>
+</body>
+</html>
