@@ -1167,7 +1167,7 @@
                 setLoading(true);
                 setResponse("");
                 try {
-                    const res = await fetch('http://localhost:8000/api/chat', {
+                    const res = await fetch('/api/chat', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ prompt: query })
@@ -1358,7 +1358,7 @@
                     <Ticker />
                     
                     {/* Header */}
-                    <header className="mt-8 border-b border-white/10 bg-void/60 backdrop-blur-xl p-4 flex justify-between items-center z-20">
+                    <header className="mt-[60px] border-b border-white/10 bg-void/60 backdrop-blur-xl p-4 flex flex-col md:flex-row justify-between items-center z-20 gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-acid/10 border border-acid/30 shadow-[0_0_10px_rgba(0,255,65,0.2)] flex items-center justify-center w-10 h-10 rounded-full">
                                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 drop-shadow-[0_0_8px_rgba(212,255,170,0.6)]">
@@ -1372,17 +1372,17 @@
                             </div>
                             <h1 className="text-xl font-bold font-display tracking-widest text-white">QUANT<span className="text-acid">X</span></h1>
                         </div>
-                        <div className="flex gap-2 bg-void p-1 border border-gray-800 rounded-full">
+                        <div className="flex flex-wrap justify-center gap-2 bg-void p-1 border border-gray-800 rounded-full max-w-full">
                             {['dashboard', 'terminal', 'ai lab'].map(tab => (
                                 <button 
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`uppercase text-xs font-bold px-4 py-2 rounded-full transition-all ${activeTab === tab ? 'bg-acid/10 text-acid border border-acid/50 shadow-[0_0_15px_rgba(0,255,65,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent hover:bg-gray-800/50'}`}
+                                    className={`uppercase text-xs font-bold px-3 md:px-4 py-2 rounded-full transition-all whitespace-nowrap ${activeTab === tab ? 'bg-acid/10 text-acid border border-acid/50 shadow-[0_0_15px_rgba(0,255,65,0.2)]' : 'text-gray-500 hover:text-gray-300 border border-transparent hover:bg-gray-800/50'}`}
                                 >
                                     {tab}
                                 </button>
                             ))}
-                            <button onClick={() => auth.signOut()} className="uppercase text-xs font-bold px-4 py-2 rounded-full text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/30">
+                            <button onClick={() => auth.signOut()} className="uppercase text-xs font-bold px-3 md:px-4 py-2 rounded-full text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/30 whitespace-nowrap">
                                 LOGOUT
                             </button>
                         </div>
