@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, Zap, ChevronRight, X } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
 import { Stock, MarketIndex } from '@/types';
 import { fmt } from '@/utils/formatters';
-import Card from '@/components/ui/Card';
 
 interface TerminalProps {
   stocks: Stock[];
@@ -45,8 +43,7 @@ const HELP_TEXT = [
 ];
 
 const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  
   const [lines, setLines] = useState<TerminalLine[]>([
     { type: 'info', content: '╔════════════════════════════════════════════════╗' },
     { type: 'info', content: '║   QUANTX TERMINAL v2.1.0  —  READY             ║' },
@@ -257,29 +254,41 @@ const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
   };
 
   const lineColors: Record<string, string> = {
-    input: isDark ? '#b0b8cc' : '#374151',
-    output: isDark ? '#5a6080' : '#6b7280',
-    error: '#ff3b30',
-    info: isDark ? '#00ff41' : '#0a84ff',
-    success: isDark ? '#00ff41' : '#059669',
+    input: '#b0b8cc',
+    output: '#5a6080',
+    error: '#ff4d4d',
+    info: '#00c896',
+    success: '#00c896',
   };
 
   return (
-    <div className={`p-4 space-y-4 ${isDark ? 'text-steel-200' : 'text-lm-text'}`}>
+    <div className="p-4 space-y-4 font-mono" style={{ background: '#080810' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`font-display text-lg font-bold flex items-center gap-2 ${isDark ? 'text-steel-50' : 'text-lm-text'}`}>
-            <TerminalIcon size={18} className={isDark ? 'text-acid-500' : 'text-signal-blue'} />
+          <h1 className="font-sans font-semibold flex items-center gap-2" style={{ fontSize: '20px', color: '#fff', letterSpacing: '-0.02em' }}>
+            <TerminalIcon size={18} style={{ color: '#e040fb' }} />
             QUANTX Terminal
           </h1>
-          <p className={`font-mono mt-0.5 ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '10px' }}>
-            COMMAND-LINE INTERFACE · TYPE "HELP" FOR COMMANDS
+          <p className="font-mono mt-0.5 uppercase" style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.35)' }}>
+            // COMMAND-LINE INTERFACE · TYPE "HELP" FOR COMMANDS
           </p>
         </div>
         <button
           onClick={() => setLines([])}
-          className={`flex items-center gap-1 font-mono text-xs px-2 py-1 border transition-colors ${isDark ? 'border-steel-700/50 text-steel-500 hover:text-signal-red hover:border-signal-red/40' : 'border-lm-border text-lm-muted hover:text-red-500'}`}
+          className="flex items-center gap-1 font-mono text-xs px-2 py-1 border transition-colors"
+          style={{
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: 'rgba(255, 255, 255, 0.45)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 77, 77, 0.4)';
+            e.currentTarget.style.color = '#ff4d4d';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)';
+          }}
         >
           <X size={10} />
           CLEAR
@@ -287,18 +296,18 @@ const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
       </div>
 
       {/* Terminal window */}
-      <Card accent noPadding>
+      <div className="qx-card" style={{ border: '1px solid rgba(255, 255, 255, 0.1)' }}>
         {/* Terminal header bar */}
-        <div className={`flex items-center gap-2 px-3 py-2 border-b ${isDark ? 'border-acid-500/10 bg-void-950/50' : 'border-lm-border bg-gray-50'}`}>
-          <div className="w-2.5 h-2.5 rounded-full bg-signal-red opacity-80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-signal-yellow opacity-80" />
-          <div className="w-2.5 h-2.5 rounded-full bg-signal-green opacity-80" />
-          <span className={`ml-2 font-mono text-xs ${isDark ? 'text-steel-500' : 'text-lm-muted'}`}>
+        <div className="flex items-center gap-2 px-3 py-2 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.06)', background: 'rgba(255, 255, 255, 0.02)' }}>
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff4d4d', opacity: 0.8 }} />
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'rgba(255, 255, 255, 0.4)', opacity: 0.8 }} />
+          <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#00c896', opacity: 0.8 }} />
+          <span className="ml-2 font-mono" style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.4)' }}>
             quantx-terminal — bash
           </span>
           <div className="flex-1" />
-          <div className={`flex items-center gap-1 font-mono ${isDark ? 'text-acid-500/60' : 'text-signal-blue/60'}`} style={{ fontSize: '9px' }}>
-            <Zap size={8} />
+          <div className="flex items-center gap-1 font-mono" style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: '9px' }}>
+            <Zap size={8} style={{ color: '#e040fb' }} />
             QUANTX v2.1.0
           </div>
         </div>
@@ -306,14 +315,14 @@ const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
         {/* Output area */}
         <div
           ref={outputRef}
-          className={`font-mono p-4 overflow-y-auto ${isDark ? 'bg-void-900/50' : 'bg-white'}`}
-          style={{ height: '420px', fontSize: '12px', lineHeight: '1.7' }}
+          className="font-mono p-4 overflow-y-auto"
+          style={{ height: '420px', fontSize: '13px', lineHeight: '1.6', color: 'rgba(255, 255, 255, 0.6)', background: '#080810' }}
           onClick={() => inputRef.current?.focus()}
         >
           {lines.map((line, i) => (
             <div
               key={i}
-              style={{ color: lineColors[line.type] || lineColors.output, whiteSpace: 'pre' }}
+              style={{ color: lineColors[line.type] || 'rgba(255, 255, 255, 0.6)', whiteSpace: 'pre' }}
             >
               {line.content}
             </div>
@@ -321,10 +330,8 @@ const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
         </div>
 
         {/* Input area */}
-        <div
-          className={`flex items-center gap-2 px-4 py-3 border-t ${isDark ? 'border-acid-500/10 bg-void-950/30' : 'border-lm-border'}`}
-        >
-          <ChevronRight size={12} className={isDark ? 'text-acid-500' : 'text-signal-blue'} />
+        <div className="flex items-center gap-2 px-4 py-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.06)', background: 'rgba(255, 255, 255, 0.02)' }}>
+          <ChevronRight size={12} style={{ color: '#e040fb' }} />
           <input
             ref={inputRef}
             type="text"
@@ -336,30 +343,29 @@ const Terminal: React.FC<TerminalProps> = ({ stocks, indices }) => {
             autoCorrect="off"
             spellCheck={false}
             placeholder="Enter command..."
-            className={`flex-1 font-mono bg-transparent outline-none ${isDark ? 'text-steel-100 placeholder-steel-700 caret-acid-500' : 'text-lm-text placeholder-lm-muted caret-signal-blue'}`}
-            style={{ fontSize: '12px' }}
+            className="flex-1 font-mono bg-transparent outline-none"
+            style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.8)',
+            }}
           />
           <button
             onClick={() => { processCommand(input); setInput(''); }}
-            className={`font-mono text-xs px-3 py-1 border transition-all ${isDark ? 'border-acid-500/30 text-acid-500 hover:bg-acid-500/10' : 'border-signal-blue/30 text-signal-blue hover:bg-signal-blue/10'}`}
+            className="font-mono text-xs px-3 py-1 border transition-colors"
+            style={{
+              border: '1px solid rgba(224, 64, 251, 0.2)',
+              color: '#e040fb',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(224, 64, 251, 0.08)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '';
+            }}
           >
             RUN
           </button>
         </div>
-      </Card>
-
-      {/* Quick commands */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className={`font-mono text-xs ${isDark ? 'text-steel-600' : 'text-lm-muted'}`}>QUICK:</span>
-        {['help', 'watchlist', 'portfolio', 'movers', 'indices', 'scan'].map((cmd) => (
-          <button
-            key={cmd}
-            onClick={() => { processCommand(cmd); }}
-            className={`font-mono text-xs px-2 py-0.5 border transition-all ${isDark ? 'border-steel-700/50 text-steel-400 hover:border-acid-500/40 hover:text-acid-500' : 'border-lm-border text-lm-muted hover:border-signal-blue/40 hover:text-signal-blue'}`}
-          >
-            {cmd}
-          </button>
-        ))}
       </div>
     </div>
   );

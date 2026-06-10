@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -21,10 +20,8 @@ interface DataTableProps<T extends Record<string, unknown>> {
 }
 
 function DataTable<T extends Record<string, unknown>>({
-  data, columns, onRowClick, maxHeight, striped = false, compact = false,
+  data, columns, onRowClick, maxHeight, striped = false,
 }: DataTableProps<T>) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
@@ -53,8 +50,8 @@ function DataTable<T extends Record<string, unknown>>({
 
   return (
     <div
-      className={`overflow-auto ${isDark ? 'scrollbar-thin scrollbar-thumb-steel-700' : ''}`}
-      style={{ maxHeight }}
+      className="overflow-auto rounded-lg"
+      style={{ maxHeight, background: '#13131f', border: '1px solid rgba(255, 255, 255, 0.07)', borderRadius: '8px' }}
     >
       <table className="w-full font-mono border-collapse">
         <thead className="sticky top-0 z-10">
@@ -62,12 +59,16 @@ function DataTable<T extends Record<string, unknown>>({
             {columns.map((col) => (
               <th
                 key={String(col.key)}
-                className={`px-3 ${compact ? 'py-1.5' : 'py-2'} text-left border-b font-normal uppercase tracking-widest cursor-pointer select-none group transition-colors ${
-                  isDark
-                    ? 'border-acid-500/10 bg-void-900/90 text-acid-500/40 hover:text-acid-500/70'
-                    : 'border-lm-border bg-lm-bg text-lm-muted hover:text-lm-text'
-                }`}
-                style={{ width: col.width, textAlign: col.align || 'left', fontSize: '9px' }}
+                className="px-3 py-2 text-left border-b font-normal uppercase tracking-widest cursor-pointer select-none group transition-colors"
+                style={{
+                  width: col.width,
+                  textAlign: col.align || 'left',
+                  fontSize: '10px',
+                  color: 'rgba(255, 255, 255, 0.3)',
+                  letterSpacing: '0.06em',
+                  borderColor: 'rgba(255, 255, 255, 0.05)',
+                  background: '#0f0f17',
+                }}
                 onClick={() => col.sortable !== false && handleSort(String(col.key))}
               >
                 <div className={`flex items-center gap-1 ${col.align === 'right' ? 'justify-end' : ''}`}>
@@ -91,23 +92,40 @@ function DataTable<T extends Record<string, unknown>>({
             <tr
               key={rowIdx}
               onClick={() => onRowClick?.(row)}
-              className={`border-b transition-colors ${
-                onRowClick ? 'cursor-pointer' : ''
-              } ${
-                isDark
-                  ? `border-acid-500/5 hover:bg-acid-500/4 ${striped && rowIdx % 2 === 1 ? 'bg-steel-900/20' : ''}`
-                  : `border-lm-border hover:bg-lm-bg ${striped && rowIdx % 2 === 1 ? 'bg-gray-50/80' : ''}`
-              }`}
+              className="border-b transition-colors"
+              style={{
+                borderColor: 'rgba(255, 255, 255, 0.05)',
+                background: striped && rowIdx % 2 === 1 ? '#111119' : '#13131f',
+                cursor: onRowClick ? 'pointer' : undefined,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = striped && rowIdx % 2 === 1 ? '#111119' : '#13131f';
+              }}
             >
               {columns.map((col) => {
                 const rawValue = row[col.key as keyof T];
+                let cellColor = 'rgba(255, 255, 255, 0.85)';
+                const cellText = col.render ? col.render(rawValue, row, rowIdx) : String(rawValue ?? '—');
+
+                if (typeof rawValue === 'number') {
+                  if (rawValue > 0) cellColor = '#00c896';
+                  else if (rawValue < 0) cellColor = '#ff4d4d';
+                }
+
                 return (
                   <td
                     key={String(col.key)}
-                    className={`px-3 ${compact ? 'py-1' : 'py-1.5'} ${isDark ? 'text-steel-300' : 'text-lm-text'}`}
-                    style={{ textAlign: col.align || 'left', fontSize: '11px' }}
+                    className="px-3 py-2"
+                    style={{
+                      textAlign: col.align || 'left',
+                      fontSize: '12px',
+                      color: cellColor,
+                    }}
                   >
-                    {col.render ? col.render(rawValue, row, rowIdx) : String(rawValue ?? '—')}
+                    {cellText}
                   </td>
                 );
               })}

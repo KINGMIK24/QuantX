@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Sun, Moon, Bell, Search, RefreshCw, Menu, X,
+  Bell, Search, RefreshCw, Menu, X,
   Zap, TrendingUp, TrendingDown, Activity,
 } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
 import { MarketIndex } from '@/types';
 import { fmt } from '@/utils/formatters';
 
@@ -20,12 +19,10 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({
   indices, lastUpdate, isLoading, onRefresh, sidebarCollapsed, onToggleSidebar,
 }) => {
-  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [alertCount] = useState(3);
   const [isMarketOpen, setIsMarketOpen] = useState(true);
-  const isDark = theme === 'dark';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,56 +40,51 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`relative flex-shrink-0 z-50 border-b ${
-        isDark
-          ? 'bg-void-950/95 border-acid-500/10 backdrop-blur-sm'
-          : 'bg-white/95 border-lm-border backdrop-blur-sm'
-      }`}
-      style={{ height: '48px' }}
+      className="relative flex-shrink-0 z-50 border-b"
+      style={{
+        height: '44px',
+        background: '#0c0c14',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+      }}
     >
-      {/* Top accent line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{
-          background: isDark
-            ? 'linear-gradient(90deg, transparent 0%, rgba(0,255,65,0.6) 30%, rgba(0,255,65,0.6) 70%, transparent 100%)'
-            : 'linear-gradient(90deg, transparent 0%, rgba(10,132,255,0.6) 30%, rgba(10,132,255,0.6) 70%, transparent 100%)',
-        }}
-      />
-
       <div className="flex items-center h-full px-3 gap-3">
         {/* Hamburger + Logo */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={onToggleSidebar}
-            className={`p-1 transition-colors ${isDark ? 'text-steel-400 hover:text-acid-500' : 'text-lm-muted hover:text-lm-text'}`}
+            className="p-1 transition-colors"
+            style={{ color: 'rgba(255, 255, 255, 0.45)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)')}
           >
             {sidebarCollapsed ? <Menu size={14} /> : <X size={14} />}
           </button>
 
           <Link to="/dashboard" className="flex items-center gap-1.5">
-            <div className={`w-6 h-6 flex items-center justify-center border ${isDark ? 'border-acid-500/40 bg-acid-500/5' : 'border-signal-blue/40 bg-signal-blue/5'}`}>
-              <Zap size={12} className={isDark ? 'text-acid-500' : 'text-signal-blue'} />
-            </div>
-            <span className={`font-display font-bold text-sm tracking-wider ${isDark ? 'text-acid-500' : 'text-signal-blue'}`}>
-              QUANT<span className={isDark ? 'text-steel-50' : 'text-lm-text'}>X</span>
+            <Zap size={14} style={{ color: '#e040fb' }} />
+            <span className="font-sans font-bold text-sm" style={{ color: '#fff', letterSpacing: '-0.02em' }}>
+              QUANT<span style={{ color: '#e040fb' }}>X</span>
             </span>
           </Link>
 
-          <span className={`font-mono text-xs px-1.5 py-0.5 border ${isDark ? 'text-steel-400 border-steel-600/40' : 'text-lm-muted border-lm-border'}`}>
+          <span
+            className="font-mono px-1.5 py-0.5 rounded"
+            style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '10px', background: 'rgba(255, 255, 255, 0.05)' }}
+          >
             {pageName}
           </span>
         </div>
 
         {/* Divider */}
-        <div className={`w-px h-6 flex-shrink-0 ${isDark ? 'bg-steel-700' : 'bg-lm-border'}`} />
+        <div className="w-px h-5 flex-shrink-0" style={{ background: 'rgba(255, 255, 255, 0.08)' }} />
 
         {/* Market Status */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <div
-            className={`w-1.5 h-1.5 rounded-full ${isMarketOpen ? 'bg-acid-500 animate-pulse' : 'bg-signal-red'}`}
+            className={`w-1.5 h-1.5 rounded-full ${isMarketOpen ? 'animate-pulse' : ''}`}
+            style={{ background: isMarketOpen ? '#00c896' : '#ff4d4d' }}
           />
-          <span className={`font-mono text-xs ${isDark ? 'text-steel-400' : 'text-lm-muted'}`}>
+          <span className="font-mono" style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '10px' }}>
             {isMarketOpen ? 'LIVE' : 'CLOSED'}
           </span>
         </div>
@@ -101,64 +93,55 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3 flex-1 overflow-hidden">
           {displayIndices.map((idx) => (
             <div key={idx.symbol} className="flex items-center gap-1.5 flex-shrink-0">
-              <span className={`font-mono text-xs font-bold ${isDark ? 'text-steel-300' : 'text-lm-text'}`}>
+              <span className="font-mono font-bold" style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '11px' }}>
                 {idx.symbol}
               </span>
-              <span className={`font-mono text-xs font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>
+              <span className="font-mono" style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '11px' }}>
                 {idx.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
-              <div className={`flex items-center gap-0.5 ${idx.changePercent >= 0 ? 'text-acid-500' : 'text-signal-red'}`}>
-                {idx.changePercent >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                <span className="font-mono text-xs">{fmt.percent(idx.changePercent)}</span>
+              <div className="flex items-center gap-0.5" style={{ color: idx.changePercent >= 0 ? '#00c896' : '#ff4d4d' }}>
+                {idx.changePercent >= 0 ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
+                <span className="font-mono" style={{ fontSize: '10px' }}>{fmt.percent(idx.changePercent)}</span>
               </div>
             </div>
           ))}
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {/* Clock */}
-          <div className={`font-mono text-xs px-2 py-0.5 border flex items-center gap-1 ${isDark ? 'border-steel-700/50 text-steel-400' : 'border-lm-border text-lm-muted'}`}>
-            <Activity size={10} className={isDark ? 'text-acid-500/60' : 'text-signal-blue/60'} />
+          <div
+            className="font-mono px-2 py-0.5 rounded flex items-center gap-1"
+            style={{ background: 'rgba(255, 255, 255, 0.04)', color: 'rgba(255, 255, 255, 0.45)', fontSize: '10px' }}
+          >
+            <Activity size={9} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
             {currentTime.toLocaleTimeString('en-US', { hour12: false })}
           </div>
 
-          {/* Search */}
-          <button
-            className={`p-1.5 border transition-colors ${isDark ? 'border-steel-700/50 text-steel-400 hover:border-acid-500/40 hover:text-acid-500' : 'border-lm-border text-lm-muted hover:border-signal-blue/40 hover:text-signal-blue'}`}
-          >
-            <Search size={12} />
-          </button>
-
-          {/* Alerts */}
-          <button className={`relative p-1.5 border transition-colors ${isDark ? 'border-steel-700/50 text-steel-400 hover:border-acid-500/40 hover:text-acid-500' : 'border-lm-border text-lm-muted hover:border-signal-blue/40 hover:text-signal-blue'}`}>
-            <Bell size={12} />
-            {alertCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-signal-red text-white text-xs flex items-center justify-center font-bold leading-none" style={{ fontSize: '8px' }}>
-                {alertCount}
-              </span>
-            )}
-          </button>
-
-          {/* Refresh */}
-          <button
-            onClick={onRefresh}
-            className={`p-1.5 border transition-colors ${isDark ? 'border-steel-700/50 text-steel-400 hover:border-acid-500/40 hover:text-acid-500' : 'border-lm-border text-lm-muted hover:border-signal-blue/40 hover:text-signal-blue'} ${isLoading ? 'animate-spin' : ''}`}
-          >
-            <RefreshCw size={12} />
-          </button>
-
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className={`p-1.5 border transition-all duration-300 ${
-              isDark
-                ? 'border-steel-700/50 text-steel-400 hover:border-acid-500/40 hover:text-acid-500'
-                : 'border-lm-border text-lm-muted hover:border-signal-blue/40 hover:text-signal-blue'
-            }`}
-          >
-            {isDark ? <Sun size={12} /> : <Moon size={12} />}
-          </button>
+          {[
+            { icon: Search, onClick: undefined },
+            { icon: Bell, onClick: undefined, badge: alertCount },
+            { icon: RefreshCw, onClick: onRefresh, spin: isLoading },
+          ].map(({ icon: Icon, onClick, badge, spin }, i) => (
+            <button
+              key={i}
+              onClick={onClick}
+              className={`p-1.5 rounded transition-colors ${spin ? 'animate-spin' : ''}`}
+              style={{ color: 'rgba(255, 255, 255, 0.35)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)')}
+            >
+              <Icon size={13} />
+              {badge && badge > 0 && (
+                <span
+                  className="absolute -top-0.5 -right-0.5 w-3 h-3 text-white flex items-center justify-center font-bold leading-none rounded-full"
+                  style={{ fontSize: '8px', background: '#ff4d4d' }}
+                >
+                  {badge}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
     </header>

@@ -12,10 +12,10 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({
   height = 400,
 }) => {
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex items-center justify-center">
-      <div className="text-center text-slate-400">
-        <p className="text-lg font-semibold mb-2">Candlestick Chart</p>
-        <p className="text-sm">{data.length} candles</p>
+    <div className="ghost-card p-4 flex items-center justify-center" style={{ width, height }}>
+      <div className="text-center" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
+        <p className="font-mono text-lg font-bold mb-2 uppercase tracking-widest" style={{ color: '#00e5ff' }}>// Candlestick Chart</p>
+        <p className="font-mono text-sm">{data.length} candles</p>
       </div>
     </div>
   )

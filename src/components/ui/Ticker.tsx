@@ -1,5 +1,4 @@
 import React from 'react'
-import Badge from './Badge'
 
 interface TickerProps {
   symbol: string
@@ -10,26 +9,32 @@ interface TickerProps {
 
 const Ticker: React.FC<TickerProps> = ({ symbol, price, change, changePercent }) => {
   const isPositive = change >= 0
-  const color = isPositive ? 'text-green-400' : 'text-red-400'
-  const badgeVariant = isPositive ? 'success' : 'danger'
+  const deltaColor = isPositive ? '#00c896' : '#ff4d4d'
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+    <div
+      className="font-mono p-3 border-b"
+      style={{
+        background: '#0f0f17',
+        borderColor: 'rgba(255, 255, 255, 0.06)',
+      }}
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-white">{symbol}</h3>
-          <p className="text-2xl font-semibold text-white">${price.toFixed(2)}</p>
+          <div className="text-sm font-bold text-white">{symbol}</div>
+          <p style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '11px' }}>
+            ${price.toFixed(2)}
+          </p>
         </div>
         <div className="text-right">
-          <p className={`text-lg font-semibold ${color}`}>
+          <p className="font-semibold" style={{ color: deltaColor, fontSize: '11px' }}>
             {isPositive ? '+' : ''}
             {change.toFixed(2)}
           </p>
-          <Badge
-            label={`${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`}
-            variant={badgeVariant}
-            size="sm"
-          />
+          <p style={{ color: deltaColor, fontSize: '10px' }}>
+            {isPositive ? '+' : ''}
+            {changePercent.toFixed(2)}%
+          </p>
         </div>
       </div>
     </div>

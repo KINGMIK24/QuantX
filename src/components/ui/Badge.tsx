@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '@/context/ThemeContext';
 
 interface BadgeProps {
   variant?: 'buy' | 'sell' | 'hold' | 'strong-buy' | 'strong-sell' | 'neutral' | 'bullish' | 'bearish';
@@ -7,52 +6,68 @@ interface BadgeProps {
   size?: 'xs' | 'sm';
 }
 
-const VARIANT_STYLES: Record<string, { dark: string; light: string }> = {
+const VARIANT_STYLES: Record<string, { border: string; color: string; bg: string }> = {
   'buy': {
-    dark: 'text-acid-500 border-acid-500/40 bg-acid-500/5',
-    light: 'text-emerald-600 border-emerald-600/40 bg-emerald-50',
+    border: '#e040fb',
+    color: '#e040fb',
+    bg: 'rgba(224, 64, 251, 0.12)',
   },
   'strong-buy': {
-    dark: 'text-acid-400 border-acid-400/60 bg-acid-500/10 font-extrabold',
-    light: 'text-emerald-700 border-emerald-700/60 bg-emerald-100 font-extrabold',
+    border: '#00c896',
+    color: '#00c896',
+    bg: 'rgba(0, 200, 150, 0.12)',
   },
   'sell': {
-    dark: 'text-signal-red border-signal-red/40 bg-signal-red/5',
-    light: 'text-red-600 border-red-600/40 bg-red-50',
+    border: '#ff4d4d',
+    color: '#ff4d4d',
+    bg: 'rgba(255, 77, 77, 0.12)',
   },
   'strong-sell': {
-    dark: 'text-signal-red border-signal-red/60 bg-signal-red/10 font-extrabold',
-    light: 'text-red-700 border-red-700/60 bg-red-100 font-extrabold',
+    border: '#ff4d4d',
+    color: '#ff4d4d',
+    bg: 'rgba(255, 77, 77, 0.12)',
   },
   'hold': {
-    dark: 'text-signal-yellow border-signal-yellow/40 bg-signal-yellow/5',
-    light: 'text-amber-600 border-amber-600/40 bg-amber-50',
+    border: 'rgba(255, 255, 255, 0.15)',
+    color: 'rgba(255, 255, 255, 0.5)',
+    bg: 'rgba(255, 255, 255, 0.08)',
   },
   'neutral': {
-    dark: 'text-steel-400 border-steel-600/40 bg-steel-800/20',
-    light: 'text-gray-500 border-gray-300 bg-gray-50',
+    border: 'rgba(255, 255, 255, 0.15)',
+    color: 'rgba(255, 255, 255, 0.5)',
+    bg: 'rgba(255, 255, 255, 0.08)',
   },
   'bullish': {
-    dark: 'text-acid-500 border-acid-500/30 bg-acid-500/5',
-    light: 'text-emerald-600 border-emerald-600/30 bg-emerald-50',
+    border: '#00c896',
+    color: '#00c896',
+    bg: 'rgba(0, 200, 150, 0.12)',
   },
   'bearish': {
-    dark: 'text-signal-red border-signal-red/30 bg-signal-red/5',
-    light: 'text-red-600 border-red-600/30 bg-red-50',
+    border: '#ff4d4d',
+    color: '#ff4d4d',
+    bg: 'rgba(255, 77, 77, 0.12)',
   },
 };
 
 const Badge: React.FC<BadgeProps> = ({ variant = 'neutral', children, size = 'xs' }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const styles = VARIANT_STYLES[variant] || VARIANT_STYLES.neutral;
+  const padding = size === 'xs' ? '2px 6px' : '3px 8px';
+  const fontSize = size === 'xs' ? '10px' : '10px';
 
   return (
     <span
-      className={`inline-flex items-center font-mono uppercase tracking-widest border ${
-        size === 'xs' ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-      } ${isDark ? styles.dark : styles.light}`}
-      style={{ fontSize: size === 'xs' ? '9px' : '10px', lineHeight: '1.6' }}
+      className="inline-flex items-center font-mono font-bold uppercase tracking-wider border"
+      style={{
+        borderColor: styles.border,
+        color: styles.color,
+        backgroundColor: styles.bg,
+        fontSize,
+        letterSpacing: '0.04em',
+        padding,
+        borderRadius: '4px',
+        borderWidth: '1px',
+        lineHeight: '1.4',
+      }}
     >
       {children}
     </span>

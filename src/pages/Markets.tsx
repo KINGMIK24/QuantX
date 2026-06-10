@@ -15,8 +15,7 @@ interface MarketsProps {
 }
 
 const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  
   const [search, setSearch] = useState('');
   const [selectedSector, setSelectedSector] = useState<string>('ALL');
 
@@ -47,8 +46,8 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       width: '90px',
       render: (_: unknown, row: Stock) => (
         <div>
-          <div className={`font-mono text-xs font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>{row.symbol}</div>
-          <div className={`font-mono truncate ${isDark ? 'text-steel-600' : 'text-lm-muted'}`} style={{ fontSize: '9px', maxWidth: '80px' }}>{row.name}</div>
+          <div style={{ fontSize: '12px', color: '#fff' }} className="font-mono font-bold">{row.symbol}</div>
+          <div style={{ fontSize: '9px', maxWidth: '80px', color: 'rgba(255, 255, 255, 0.35)' }} className="font-mono truncate">{row.name}</div>
         </div>
       ),
     },
@@ -58,7 +57,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '80px',
       render: (_: unknown, row: Stock) => (
-        <span className={`font-mono text-xs font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>
+        <span style={{ fontSize: '12px', color: '#fff' }} className="font-mono font-bold">
           {fmt.currency(row.price)}
         </span>
       ),
@@ -69,7 +68,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '70px',
       render: (_: unknown, row: Stock) => (
-        <span className={`font-mono text-xs font-bold ${row.changePercent >= 0 ? (isDark ? 'text-acid-500' : 'text-emerald-600') : 'text-signal-red'}`}>
+        <span style={{ fontSize: '12px', color: row.changePercent >= 0 ? '#00c896' : '#ff4d4d' }} className="font-mono font-bold">
           {fmt.percent(row.changePercent)}
         </span>
       ),
@@ -90,8 +89,8 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       width: '80px',
       render: (_: unknown, row: Stock) => (
         <div className="text-right">
-          <div className={`font-mono text-xs ${isDark ? 'text-steel-300' : 'text-lm-text'}`}>{fmt.number(row.volume, true)}</div>
-          <div className={`font-mono ${row.volume > row.avgVolume ? (isDark ? 'text-acid-500' : 'text-emerald-600') : (isDark ? 'text-steel-600' : 'text-lm-muted')}`} style={{ fontSize: '9px' }}>
+          <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }} className="font-mono">{fmt.number(row.volume, true)}</div>
+          <div style={{ fontSize: '9px', color: row.volume > row.avgVolume ? '#00c896' : 'rgba(255, 255, 255, 0.35)' }} className="font-mono">
             {((row.volume / row.avgVolume) * 100).toFixed(0)}% avg
           </div>
         </div>
@@ -103,7 +102,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '80px',
       render: (_: unknown, row: Stock) => (
-        <span className={`font-mono text-xs ${isDark ? 'text-steel-300' : 'text-lm-text'}`}>{fmt.currency(row.marketCap, true)}</span>
+        <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }} className="font-mono">{fmt.currency(row.marketCap, true)}</span>
       ),
     },
     {
@@ -112,7 +111,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '55px',
       render: (_: unknown, row: Stock) => (
-        <span className={`font-mono text-xs ${row.pe > 50 ? 'text-signal-yellow' : row.pe < 0 ? 'text-signal-red' : (isDark ? 'text-steel-300' : 'text-lm-text')}`}>
+        <span style={{ fontSize: '12px', color: row.pe > 50 ? 'rgba(255, 255, 255, 0.4)' : row.pe < 0 ? '#ff4d4d' : 'rgba(255, 255, 255, 0.6)' }} className="font-mono">
           {row.pe > 0 ? row.pe.toFixed(1) : 'N/A'}
         </span>
       ),
@@ -123,11 +122,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '55px',
       render: (_: unknown, row: Stock) => (
-        <span
-          className={`font-mono text-xs font-bold ${
-            row.rsi >= 70 ? 'text-signal-red' : row.rsi <= 30 ? (isDark ? 'text-acid-500' : 'text-emerald-600') : (isDark ? 'text-steel-300' : 'text-lm-text')
-          }`}
-        >
+        <span style={{ fontSize: '12px', color: row.rsi >= 70 ? '#ff4d4d' : row.rsi <= 30 ? '#00c896' : 'rgba(255, 255, 255, 0.6)' }} className="font-mono font-bold">
           {row.rsi.toFixed(1)}
         </span>
       ),
@@ -138,7 +133,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       align: 'right' as const,
       width: '55px',
       render: (_: unknown, row: Stock) => (
-        <span className={`font-mono text-xs ${isDark ? 'text-steel-400' : 'text-lm-muted'}`}>{row.beta.toFixed(2)}</span>
+        <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }} className="font-mono">{row.beta.toFixed(2)}</span>
       ),
     },
     {
@@ -159,48 +154,50 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       width: '60px',
       render: (_: unknown, row: Stock) => (
         <div className="flex items-center justify-end gap-1.5">
-          <div className={`h-1 w-8 ${isDark ? 'bg-steel-800' : 'bg-gray-100'}`}>
+          <div style={{ height: '4px', width: '32px', background: 'rgba(255, 255, 255, 0.08)' }} className="h-1">
             <div
               className="h-full"
               style={{
                 width: `${row.score}%`,
-                background: row.score >= 70 ? (isDark ? '#00ff41' : '#059669') : row.score >= 40 ? '#ffd60a' : '#ff3b30',
+                background: row.score >= 70 ? '#00c896' : row.score >= 40 ? '#ffd60a' : '#ff4d4d',
               }}
             />
           </div>
-          <span className={`font-mono text-xs font-bold ${isDark ? 'text-steel-200' : 'text-lm-text'}`}>{row.score}</span>
+          <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.8)' }} className="font-mono font-bold">{row.score}</span>
         </div>
       ),
     },
   ];
 
   return (
-    <div className={`p-4 space-y-4 ${isDark ? 'text-steel-200' : 'text-lm-text'}`}>
+    <div className="p-4 space-y-4 font-sans">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`font-display text-lg font-bold ${isDark ? 'text-steel-50' : 'text-lm-text'}`}>Markets Overview</h1>
-          <p className={`font-mono mt-0.5 ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '10px' }}>
+          <h1 className="font-sans font-semibold" style={{ fontSize: '20px', letterSpacing: '-0.02em', color: '#fff' }}>
+            Markets Overview
+          </h1>
+          <p className="font-mono mt-0.5" style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.35)' }}>
             REAL-TIME EQUITY SURVEILLANCE · {stocks.length} SECURITIES MONITORED
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Globe size={14} className={isDark ? 'text-acid-500' : 'text-signal-blue'} />
-          <span className={`font-mono text-xs ${isDark ? 'text-acid-500' : 'text-signal-blue'}`}>NYSE · NASDAQ · CBOE</span>
+          <Globe size={14} style={{ color: '#00c896' }} />
+          <span className="font-mono text-xs" style={{ color: '#00c896' }}>NYSE · NASDAQ · CBOE</span>
         </div>
       </div>
 
-      {/* Index Cards */}
+{/* Index Cards */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
         {indices.map((idx) => (
-          <Card key={idx.symbol} className="p-3" glowOnHover>
-            <div className={`font-mono text-xs font-bold mb-0.5 ${isDark ? 'text-steel-400' : 'text-lm-muted'}`} style={{ fontSize: '9px' }}>
+          <Card key={idx.symbol} className="p-3">
+            <div className="font-mono font-bold mb-0.5" style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.45)' }}>
               {idx.name}
             </div>
-            <div className={`font-mono text-sm font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>
+            <div className="font-mono font-bold" style={{ fontSize: '13px', color: '#fff' }}>
               {idx.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <div className={`flex items-center gap-1 mt-0.5 ${idx.changePercent >= 0 ? (isDark ? 'text-acid-500' : 'text-emerald-600') : 'text-signal-red'}`}>
+            <div className="flex items-center gap-1 mt-0.5" style={{ color: idx.changePercent >= 0 ? '#00c896' : '#ff4d4d' }}>
               {idx.changePercent >= 0 ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
               <span className="font-mono" style={{ fontSize: '10px' }}>{fmt.percent(idx.changePercent)}</span>
             </div>
@@ -212,7 +209,7 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       </div>
 
       {/* Sector Performance Bar */}
-      <Card title="SECTOR PERFORMANCE" accent noPadding>
+      <Card title="SECTOR PERFORMANCE"  noPadding>
         <div className="p-3">
           <div className="flex items-end gap-1 h-16">
             {MOCK_SECTORS.map((sec) => {
@@ -220,22 +217,22 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
               const isPos = sec.changePercent >= 0;
               return (
                 <div key={sec.sector} className="flex flex-col items-center gap-1 flex-1 min-w-0">
-                  <span className={`font-mono font-bold ${isPos ? (isDark ? 'text-acid-500' : 'text-emerald-600') : 'text-signal-red'}`} style={{ fontSize: '8px' }}>
-                    {fmt.percent(sec.changePercent, 1)}
-                  </span>
+<span className="font-mono font-bold" style={{ fontSize: '8px', color: isPos ? '#00c896' : '#ff4d4d' }}>
+                      {fmt.percent(sec.changePercent, 1)}
+                    </span>
                   <div className="w-full flex items-end justify-center" style={{ height: '40px' }}>
                     <div
                       className="w-full max-w-10 transition-all duration-500"
                       style={{
                         height: `${Math.max(4, Math.min(h, 40))}px`,
-                        background: isPos ? (isDark ? '#00ff41' : '#059669') : '#ff3b30',
+                        background: isPos ? ('#00c896') : '#ff4d4d',
                         opacity: 0.7,
                       }}
                     />
                   </div>
-                  <span className={`font-mono truncate w-full text-center ${isDark ? 'text-steel-600' : 'text-lm-muted'}`} style={{ fontSize: '7px' }}>
-                    {sec.sector.substring(0, 6).toUpperCase()}
-                  </span>
+<span className="font-mono truncate w-full text-center" style={{ fontSize: '7px', color: 'rgba(255, 255, 255, 0.35)' }}>
+                      {sec.sector.substring(0, 6).toUpperCase()}
+                    </span>
                 </div>
               );
             })}
@@ -244,37 +241,37 @@ const Markets: React.FC<MarketsProps> = ({ stocks, indices }) => {
       </Card>
 
       {/* Stock Table */}
-      <Card accent noPadding
+      <Card  noPadding
         title="EQUITY SURVEILLANCE"
         subtitle={`${filtered.length} of ${stocks.length} securities`}
-        headerRight={
-          <div className="flex items-center gap-2">
-            {/* Search */}
-            <div className={`flex items-center gap-1.5 border px-2 py-1 ${isDark ? 'border-steel-700/50' : 'border-lm-border'}`}>
-              <Search size={10} className={isDark ? 'text-steel-500' : 'text-lm-muted'} />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="SEARCH SYMBOL..."
-                className={`font-mono bg-transparent outline-none w-28 ${isDark ? 'text-steel-200 placeholder-steel-600' : 'text-lm-text placeholder-lm-muted'}`}
-                style={{ fontSize: '10px' }}
-              />
-            </div>
+headerRight={
+           <div className="flex items-center gap-2">
+             {/* Search */}
+             <div className="flex items-center gap-1.5 border px-2 py-1" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
+               <Search size={10} style={{ color: 'rgba(255, 255, 255, 0.35)' }} />
+               <input
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
+                 placeholder="SEARCH SYMBOL..."
+                 className="font-mono bg-transparent outline-none w-28 placeholder-white/20"
+                 style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)' }}
+               />
+             </div>
 
-            {/* Sector Filter */}
-            <div className={`flex items-center gap-1.5 border px-2 py-1 ${isDark ? 'border-steel-700/50' : 'border-lm-border'}`}>
-              <Filter size={10} className={isDark ? 'text-steel-500' : 'text-lm-muted'} />
-              <select
-                value={selectedSector}
-                onChange={(e) => setSelectedSector(e.target.value)}
-                className={`font-mono bg-transparent outline-none cursor-pointer ${isDark ? 'text-steel-200' : 'text-lm-text'}`}
-                style={{ fontSize: '10px' }}
-              >
-                {sectors.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-        }
+             {/* Sector Filter */}
+             <div className="flex items-center gap-1.5 border px-2 py-1" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
+               <Filter size={10} style={{ color: 'rgba(255, 255, 255, 0.35)' }} />
+               <select
+                 value={selectedSector}
+                 onChange={(e) => setSelectedSector(e.target.value)}
+                 className="font-mono bg-transparent outline-none cursor-pointer"
+                 style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)' }}
+               >
+                 {sectors.map((s) => <option key={s} value={s}>{s}</option>)}
+               </select>
+             </div>
+           </div>
+         }
       >
         <DataTable
           data={filtered as unknown as Record<string, unknown>[]}

@@ -5,7 +5,6 @@ import {
   BarChart2, Terminal as TerminalIcon, ChevronRight,
   Target, Cpu, Shield, Settings,
 } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
 import type { ViewMode } from '@/types';
 
 interface NavItem {
@@ -34,10 +33,8 @@ interface SidebarProps {
   collapsed: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, collapsed }) => {
-  const { theme } = useTheme();
+const Sidebar: React.FC<SidebarProps> = ({ onNavigate, collapsed }) => {
   const location = useLocation();
-  const isDark = theme === 'dark';
 
   if (collapsed) return null;
 
@@ -45,12 +42,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, collapsed }) 
 
   return (
     <aside
-      className={`flex-shrink-0 flex flex-col border-r transition-all duration-300 ${
-        isDark
-          ? 'bg-void-950/80 border-acid-500/10'
-          : 'bg-white border-lm-border'
-      }`}
-      style={{ width: '200px' }}
+      className="flex-shrink-0 flex flex-col border-r transition-all duration-300"
+      style={{
+        width: '200px',
+        background: '#0f0f17',
+        borderColor: 'rgba(255, 255, 255, 0.06)',
+      }}
     >
       {/* Navigation */}
       <nav className="flex-1 py-3 overflow-y-auto">
@@ -59,8 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, collapsed }) 
           return (
             <div key={group} className="mb-2">
               {/* Group Label */}
-              <div className={`px-4 py-1.5 font-mono text-xs tracking-widest ${isDark ? 'text-acid-500/30' : 'text-signal-blue/40'}`}>
-                {group}
+              <div
+                className="px-4 py-1.5 font-mono uppercase"
+                style={{ color: 'rgba(255, 255, 255, 0.25)', letterSpacing: '0.08em', fontSize: '10px' }}
+              >
+                // {group}
               </div>
 
               {groupItems.map((item) => {
@@ -72,51 +72,44 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, collapsed }) 
                     key={item.id}
                     to={item.path}
                     onClick={() => onNavigate(item.id)}
-                    className={`group relative flex items-center gap-2.5 px-4 py-2 mx-2 transition-all duration-150 ${
-                      isActive
-                        ? isDark
-                          ? 'bg-acid-500/8 text-acid-500 border border-acid-500/20'
-                          : 'bg-signal-blue/8 text-signal-blue border border-signal-blue/20'
-                        : isDark
-                          ? 'text-steel-400 hover:text-steel-100 hover:bg-steel-800/30 border border-transparent'
-                          : 'text-lm-muted hover:text-lm-text hover:bg-lm-bg border border-transparent'
-                    }`}
+                    className="group relative flex items-center gap-2.5 px-4 py-2 mx-1 rounded-md transition-all duration-150"
+                    style={{
+                      background: isActive ? 'rgba(224, 64, 251, 0.08)' : 'transparent',
+                      borderLeft: isActive ? '2px solid #e040fb' : '2px solid transparent',
+                      color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.45)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)';
+                      }
+                    }}
                   >
-                    {/* Active indicator */}
-                    {isActive && (
-                      <div
-                        className={`absolute left-0 top-0 bottom-0 w-px ${isDark ? 'bg-acid-500' : 'bg-signal-blue'}`}
-                      />
-                    )}
+                    <Icon size={14} className="flex-shrink-0" />
 
-                    <Icon
-                      size={13}
-                      className={`flex-shrink-0 transition-colors ${
-                        isActive
-                          ? isDark ? 'text-acid-500' : 'text-signal-blue'
-                          : 'text-current'
-                      }`}
-                    />
-
-                    <span className="font-mono text-xs tracking-wide flex-1">{item.label}</span>
+                    <span className="font-sans text-xs flex-1" style={{ fontSize: '13px' }}>{item.label}</span>
 
                     {item.badge && (
                       <span
-                        className={`font-mono text-xs px-1 py-0 border leading-none ${
-                          item.badge === 'LIVE'
-                            ? 'text-acid-500 border-acid-500/40'
-                            : item.badge === 'AI'
-                              ? 'text-signal-purple border-signal-purple/40'
-                              : 'text-signal-yellow border-signal-yellow/40'
-                        }`}
-                        style={{ fontSize: '8px' }}
+                        className="font-mono px-1 rounded"
+                        style={{
+                          fontSize: '9px',
+                          background: item.badge === 'LIVE' ? 'rgba(0, 200, 150, 0.15)' : item.badge === 'AI' ? 'rgba(224, 64, 251, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                          color: item.badge === 'LIVE' ? '#00c896' : item.badge === 'AI' ? '#e040fb' : 'rgba(255, 255, 255, 0.5)',
+                        }}
                       >
                         {item.badge}
                       </span>
                     )}
 
                     {isActive && (
-                      <ChevronRight size={10} className={isDark ? 'text-acid-500/60' : 'text-signal-blue/60'} />
+                      <ChevronRight size={10} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
                     )}
                   </Link>
                 );
@@ -127,27 +120,38 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, collapsed }) 
       </nav>
 
       {/* System Stats */}
-      <div className={`p-3 border-t ${isDark ? 'border-acid-500/10' : 'border-lm-border'}`}>
-        <div className={`font-mono text-xs space-y-1.5 ${isDark ? 'text-steel-500' : 'text-lm-muted'}`}>
+      <div className="p-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}>
+        <div className="font-mono space-y-1.5" style={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: '10px' }}>
           {[
-            { icon: Target, label: 'SIGNALS', value: '142', color: isDark ? 'text-acid-500' : 'text-signal-blue' },
-            { icon: Cpu, label: 'LATENCY', value: '2ms', color: isDark ? 'text-acid-500' : 'text-signal-blue' },
-            { icon: Shield, label: 'UPTIME', value: '99.9%', color: isDark ? 'text-acid-500' : 'text-signal-blue' },
-          ].map(({ icon: Icon, label, value, color }) => (
+            { icon: Target, label: 'SIGNALS', value: '142' },
+            { icon: Cpu, label: 'LATENCY', value: '2ms' },
+            { icon: Shield, label: 'UPTIME', value: '99.9%' },
+          ].map(({ icon: Icon, label, value }) => (
             <div key={label} className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Icon size={9} className={color} />
-                <span style={{ fontSize: '9px' }}>{label}</span>
+                <Icon size={9} />
+                <span>{label}</span>
               </div>
-              <span className={`font-bold ${color}`} style={{ fontSize: '9px' }}>{value}</span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>{value}</span>
             </div>
           ))}
         </div>
 
         {/* Settings Link */}
-        <button className={`mt-2 w-full flex items-center gap-1.5 px-2 py-1.5 border transition-colors ${isDark ? 'border-steel-700/40 text-steel-500 hover:text-steel-300 hover:border-steel-600' : 'border-lm-border text-lm-muted hover:text-lm-text'}`}>
+        <button
+          className="mt-2 w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md transition-colors font-mono uppercase tracking-wider"
+          style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.35)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '';
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)';
+          }}
+        >
           <Settings size={10} />
-          <span style={{ fontSize: '9px' }} className="font-mono tracking-widest uppercase">Settings</span>
+          <span>Settings</span>
         </button>
       </div>
     </aside>

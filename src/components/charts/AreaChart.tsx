@@ -1,9 +1,8 @@
 import React from 'react';
 import {
   AreaChart as ReAreaChart, Area, XAxis, YAxis,
-  CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
+  CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { useTheme } from '@/context/ThemeContext';
 import { fmt } from '@/utils/formatters';
 
 interface AreaChartProps {
@@ -12,21 +11,23 @@ interface AreaChartProps {
   showBenchmark?: boolean;
 }
 
-const CustomTooltip: React.FC<{ active?: boolean; payload?: unknown[]; label?: string; isDark: boolean }> = ({
-  active, payload, label, isDark,
+const CustomTooltip: React.FC<{ active?: boolean; payload?: unknown[] }> = ({
+  active, payload,
 }) => {
   if (!active || !payload || !Array.isArray(payload) || payload.length === 0) return null;
   return (
     <div
-      className={`font-mono text-xs p-2 border ${
-        isDark ? 'bg-void-800 border-acid-500/20 text-steel-200' : 'bg-white border-lm-border text-lm-text shadow-md'
-      }`}
+      className="font-mono text-xs p-2 rounded-md"
+      style={{
+        background: '#1a1a28',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        color: '#fff',
+      }}
     >
-      <p className={`mb-1 ${isDark ? 'text-acid-500/60' : 'text-signal-blue/60'}`} style={{ fontSize: '9px' }}>{label}</p>
       {(payload as Array<{ name: string; value: number; color: string }>).map((entry) => (
         <div key={entry.name} className="flex items-center gap-2">
           <div className="w-2 h-px" style={{ background: entry.color }} />
-          <span className={isDark ? 'text-steel-400' : 'text-lm-muted'} style={{ fontSize: '9px' }}>{entry.name}:</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '11px' }}>{entry.name}:</span>
           <span className="font-bold">{fmt.currency(entry.value)}</span>
         </div>
       ))}
@@ -35,33 +36,32 @@ const CustomTooltip: React.FC<{ active?: boolean; payload?: unknown[]; label?: s
 };
 
 const AreaChart: React.FC<AreaChartProps> = ({ data, height = 200, showBenchmark = false }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-
   const firstValue = data[0]?.value || 0;
   const lastValue = data[data.length - 1]?.value || 0;
   const isPositive = lastValue >= firstValue;
-  const mainColor = isDark ? (isPositive ? '#00ff41' : '#ff3b30') : (isPositive ? '#059669' : '#dc2626');
+  const mainColor = '#e040fb';
+  const negColor = '#ff4d4d';
+  const strokeColor = isPositive ? mainColor : negColor;
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ReAreaChart data={data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="mainGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={mainColor} stopOpacity={0.25} />
-            <stop offset="100%" stopColor={mainColor} stopOpacity={0} />
+            <stop offset="0%" stopColor={strokeColor} stopOpacity={0.15} />
+            <stop offset="100%" stopColor={strokeColor} stopOpacity={0} />
           </linearGradient>
           {showBenchmark && (
             <linearGradient id="benchGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8890b0" stopOpacity={0.1} />
-              <stop offset="100%" stopColor="#8890b0" stopOpacity={0} />
+              <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" stopOpacity={1} />
+              <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" stopOpacity={1} />
             </linearGradient>
           )}
         </defs>
 
         <CartesianGrid
           strokeDasharray="0"
-          stroke={isDark ? 'rgba(0,255,65,0.05)' : 'rgba(15,17,23,0.05)'}
+          stroke="rgba(255, 255, 255, 0.04)"
           vertical={false}
         />
 
@@ -69,7 +69,7 @@ const AreaChart: React.FC<AreaChartProps> = ({ data, height = 200, showBenchmark
           dataKey="date"
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDark ? '#5a6080' : '#9ca3af', fontSize: 9, fontFamily: 'JetBrains Mono' }}
+          tick={{ fill: 'rgba(255, 255, 255, 0.25)', fontSize: 10, fontFamily: 'Space Mono' }}
           tickFormatter={(v) => {
             const d = new Date(v);
             return `${d.toLocaleString('en', { month: 'short' })} ${d.getDate()}`;
@@ -80,18 +80,18 @@ const AreaChart: React.FC<AreaChartProps> = ({ data, height = 200, showBenchmark
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: isDark ? '#5a6080' : '#9ca3af', fontSize: 9, fontFamily: 'JetBrains Mono' }}
+          tick={{ fill: 'rgba(255, 255, 255, 0.25)', fontSize: 10, fontFamily: 'Space Mono' }}
           tickFormatter={(v) => fmt.currency(v, true)}
           domain={['auto', 'auto']}
         />
 
-        <Tooltip content={<CustomTooltip isDark={isDark} />} />
+        <Tooltip content={<CustomTooltip />} />
 
         {showBenchmark && (
           <Area
             type="monotone"
             dataKey="benchmark"
-            stroke="#5a6080"
+            stroke="rgba(255, 255, 255, 0.25)"
             strokeWidth={1}
             fill="url(#benchGrad)"
             strokeDasharray="3 2"
@@ -103,12 +103,12 @@ const AreaChart: React.FC<AreaChartProps> = ({ data, height = 200, showBenchmark
         <Area
           type="monotone"
           dataKey="value"
-          stroke={mainColor}
+          stroke={strokeColor}
           strokeWidth={1.5}
           fill="url(#mainGrad)"
           name="Portfolio"
           dot={false}
-          activeDot={{ r: 3, fill: mainColor, stroke: isDark ? '#07070f' : '#fff', strokeWidth: 2 }}
+          activeDot={{ r: 3, fill: strokeColor, stroke: '#13131f', strokeWidth: 2 }}
         />
       </ReAreaChart>
     </ResponsiveContainer>

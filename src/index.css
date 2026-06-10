@@ -1,27 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   QUANTX — GLOBAL STYLES | TECHNICAL BRUTALIST DESIGN SYSTEM
+   QUANTX — PROFESSIONAL TERMINAL DESIGN SYSTEM
    ═══════════════════════════════════════════════════════════════════════════ */
-
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300..700&family=Inter:wght@100..900&display=swap');
 
 /* ── Base Reset & CSS Variables ─────────────────────────────────────────── */
 :root {
-  --color-acid: #00ff41;
-  --color-void: #07070f;
-  --color-steel: #1c1f2e;
-  --color-red: #ff3b30;
-  --color-blue: #0a84ff;
-  --color-yellow: #ffd60a;
-  --grid-size: 32px;
-  --border-acid: 1px solid rgba(0, 255, 65, 0.2);
-  --scrollbar-width: 6px;
-  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --qx-bg: #0a0a0f;
+  --qx-surface: #13131f;
+  --qx-sidebar: #0f0f17;
+  --qx-navbar: #0c0c14;
+  --qx-statusbar: #080810;
+  --qx-border: rgba(255, 255, 255, 0.07);
+  --qx-border-hover: rgba(255, 255, 255, 0.14);
+  --qx-accent-purple: #e040fb;
+  --qx-accent-cyan: #00e5ff;
+  --qx-positive: #00c896;
+  --qx-negative: #ff4d4d;
+  --qx-text-primary: #fff;
+  --qx-text-secondary: rgba(255, 255, 255, 0.45);
+  --qx-text-tertiary: rgba(255, 255, 255, 0.35);
+  --qx-text-muted: rgba(255, 255, 255, 0.25);
+  --scrollbar-width: 5px;
 }
 
 html {
@@ -41,216 +45,40 @@ html {
   background: transparent;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.15);
-  border-radius: 0;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 65, 0.35);
-}
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 17, 23, 0.15);
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 17, 23, 0.35);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* ── Selection Styling ──────────────────────────────────────────────────── */
-.dark ::selection {
-  background: rgba(0, 255, 65, 0.25);
-  color: #00ff41;
-}
-
 ::selection {
-  background: rgba(10, 132, 255, 0.25);
-  color: #0a84ff;
+  background: rgba(224, 64, 251, 0.2);
+  color: #e040fb;
 }
 
-/* ── Body Backgrounds ───────────────────────────────────────────────────── */
-.dark body {
-  background-color: #07070f;
-  color: #b0b8cc;
-}
-
+/* ── Body ───────────────────────────────────────────────────────────────── */
 body {
-  background-color: #f0f2f7;
-  color: #0f1117;
+  background: var(--qx-bg);
+  color: var(--qx-text-primary);
   font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
 }
 
-/* ── Typography ─────────────────────────────────────────────────────────── */
-.font-terminal {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
-  font-feature-settings: 'liga' 0, 'calt' 0;
-  letter-spacing: -0.01em;
-}
-
-.font-display {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
-  letter-spacing: -0.02em;
-}
-
-/* ── Layout Components ──────────────────────────────────────────────────── */
+/* ── Card System — Professional Panels ──────────────────────────────────── */
 @layer components {
-  /* Brutalist Card */
   .qx-card {
-    @apply relative overflow-hidden;
-    background: linear-gradient(135deg, rgba(13, 13, 26, 0.98) 0%, rgba(18, 18, 36, 0.96) 100%);
-    border: 1px solid rgba(0, 255, 65, 0.12);
-    box-shadow: 0 1px 0 rgba(0, 255, 65, 0.06) inset;
+    background: var(--qx-surface);
+    border: 1px solid var(--qx-border);
+    border-radius: 8px;
+    transition: border-color 150ms ease;
   }
 
-  .qx-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 65, 0.4) 50%, transparent 100%);
-  }
-
-  .dark .qx-card {
-    background: linear-gradient(135deg, rgba(13, 13, 26, 0.98) 0%, rgba(18, 18, 36, 0.96) 100%);
-  }
-
-  .lm .qx-card {
-    background: #ffffff;
-    border-color: rgba(15, 17, 23, 0.08);
-  }
-
-  /* Brutalist Button */
-  .qx-btn-primary {
-    @apply font-mono text-xs font-bold uppercase tracking-widest px-4 py-2 transition-all duration-150;
-    background: rgba(0, 255, 65, 0.1);
-    border: 1px solid rgba(0, 255, 65, 0.4);
-    color: #00ff41;
-  }
-
-  .qx-btn-primary:hover {
-    background: rgba(0, 255, 65, 0.2);
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
-  }
-
-  .qx-btn-primary:active {
-    transform: translate(1px, 1px);
-  }
-
-  /* Data Label */
-  .qx-label {
-    @apply font-mono text-xs uppercase tracking-widest;
-    color: rgba(0, 255, 65, 0.5);
-  }
-
-  /* Brutalist Separator */
-  .qx-sep {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 65, 0.15) 30%, rgba(0, 255, 65, 0.15) 70%, transparent 100%);
-  }
-
-  /* Profit/Loss Colors */
-  .text-profit {
-    color: #00ff41;
-  }
-
-  .text-loss {
-    color: #ff3b30;
-  }
-
-  .text-neutral {
-    color: #8890b0;
-  }
-
-  /* Grid Background */
-  .qx-grid-bg {
-    background-image:
-      linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  .lm .qx-grid-bg {
-    background-image:
-      linear-gradient(rgba(15, 17, 23, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(15, 17, 23, 0.05) 1px, transparent 1px);
-  }
-
-  /* Signal Badge Base */
-  .qx-signal {
-    @apply font-mono text-xs font-bold uppercase px-2 py-0.5 tracking-widest;
-    border-width: 1px;
-    border-style: solid;
-  }
-
-  /* Brutalist Table */
-  .qx-table {
-    @apply w-full font-mono text-xs;
-    border-collapse: collapse;
-  }
-
-  .qx-table th {
-    @apply px-3 py-2 text-left uppercase tracking-widest;
-    color: rgba(0, 255, 65, 0.45);
-    border-bottom: 1px solid rgba(0, 255, 65, 0.08);
-    font-size: 10px;
-  }
-
-  .qx-table td {
-    @apply px-3 py-2;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.04);
-    color: #b0b8cc;
-  }
-
-  .qx-table tr:hover td {
-    background: rgba(0, 255, 65, 0.025);
-    color: #d8dcee;
-  }
-
-  /* Input Styling */
-  .qx-input {
-    @apply font-mono text-xs bg-transparent outline-none w-full;
-    color: #b0b8cc;
-    border: 1px solid rgba(0, 255, 65, 0.15);
-    padding: 8px 12px;
-    caret-color: #00ff41;
-  }
-
-  .qx-input:focus {
-    border-color: rgba(0, 255, 65, 0.4);
-    box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.08);
-    color: #d8dcee;
-  }
-
-  .qx-input::placeholder {
-    color: rgba(176, 184, 204, 0.3);
-  }
-
-  /* Corner Decorator */
-  .qx-corner::after,
-  .qx-corner::before {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-color: rgba(0, 255, 65, 0.4);
-    border-style: solid;
-  }
-
-  .qx-corner::before {
-    top: 0;
-    left: 0;
-    border-width: 1px 0 0 1px;
-  }
-
-  .qx-corner::after {
-    bottom: 0;
-    right: 0;
-    border-width: 0 1px 1px 0;
+  .qx-card:hover {
+    border-color: var(--qx-border-hover);
   }
 }
 
@@ -264,100 +92,20 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-
-  .text-acid {
-    color: #00ff41;
-  }
-
-  .border-acid {
-    border-color: rgba(0, 255, 65, 0.2);
-  }
-
-  .bg-void {
-    background: #07070f;
-  }
-
-  .bg-steel {
-    background: #1c1f2e;
-  }
-
-  .clip-brutalist {
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-  }
-
-  .clip-corner {
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-  }
 }
 
 /* ── Chart Overrides ────────────────────────────────────────────────────── */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(0, 255, 65, 0.06) !important;
+  stroke: rgba(255, 255, 255, 0.04) !important;
 }
 
 .recharts-tooltip-wrapper {
   filter: none !important;
 }
 
-.dark .recharts-text {
-  fill: rgba(176, 184, 204, 0.6) !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 11px !important;
-}
-
-/* ── Light Mode Overrides ───────────────────────────────────────────────── */
-.light-mode-card {
-  background: #ffffff;
-  border: 1px solid rgba(15, 17, 23, 0.08);
-  box-shadow: 0 1px 3px rgba(15, 17, 23, 0.08);
-}
-
-/* ── Animated Number Rolling ────────────────────────────────────────────── */
-.number-update {
-  animation: number-roll 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* ── Blinking Cursor ────────────────────────────────────────────────────── */
-.cursor-blink::after {
-  content: '▮';
-  animation: blink 1s step-end infinite;
-  color: #00ff41;
-  margin-left: 2px;
-}
-
-/* ── Geometric Border Pattern ───────────────────────────────────────────── */
-.geo-border {
-  background:
-    linear-gradient(to right, rgba(0, 255, 65, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 255, 65, 0.3) 1px, transparent 1px);
-  background-size: 100% 100%;
-  background-position: 0 0;
-}
-
-/* ── Gradient Masks ─────────────────────────────────────────────────────── */
-.fade-right {
-  mask-image: linear-gradient(to right, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
-}
-
-.fade-bottom {
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-}
-
-/* ── Scan Line Effect ───────────────────────────────────────────────────── */
-.scanline-overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 255, 65, 0.012) 2px,
-    rgba(0, 255, 65, 0.012) 4px
-  );
-  pointer-events: none;
-  z-index: 100;
+.recharts-text {
+  fill: rgba(255, 255, 255, 0.25) !important;
+  font-family: 'Space Mono', monospace !important;
+  font-size: 10px !important;
 }

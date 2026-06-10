@@ -40,14 +40,13 @@ const Sparkline: React.FC<SparklineProps> = ({
     return { path: linePath, areaPath: areaP, isPositive: pos };
   }, [data, width, height, positive]);
 
-  const color = isPositive ? '#00ff41' : '#ff3b30';
-  const colorAlt = isPositive ? '#0a84ff' : '#ff6961';
+  const color = isPositive ? '#00c896' : '#ff4d4d';
 
   return (
     <svg width={width} height={height} className="overflow-visible">
       <defs>
         <linearGradient id={`spark-grad-${isPositive}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>

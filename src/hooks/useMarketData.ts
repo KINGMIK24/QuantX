@@ -54,7 +54,7 @@ export const useMarketData = (): UseMarketDataReturn => {
   const [news] = useState<NewsItem[]>(MOCK_NEWS);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<any | null>(null);
 
   const tick = useCallback(() => {
     setStocks((prev) => simulateTickerUpdate(prev));

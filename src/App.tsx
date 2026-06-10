@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useTheme } from '@/context/ThemeContext';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
 import StatusBar from '@/components/layout/StatusBar';
@@ -14,31 +13,15 @@ import { useMarketData } from '@/hooks/useMarketData';
 import type { ViewMode } from '@/types';
 
 const App: React.FC = () => {
-  const { theme } = useTheme();
   const [activeView, setActiveView] = useState<ViewMode>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const marketData = useMarketData();
 
   return (
     <div
-      className={`min-h-screen flex flex-col ${
-        theme === 'dark'
-          ? 'bg-void-900 text-steel-100'
-          : 'bg-lm-bg text-lm-text'
-      } font-mono overflow-hidden`}
+      className="min-h-screen flex flex-col font-sans overflow-hidden"
+      style={{ background: '#0a0a0f', color: '#fff' }}
     >
-      {/* Grid Background Overlay */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage:
-            theme === 'dark'
-              ? 'linear-gradient(rgba(0,255,65,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.025) 1px, transparent 1px)'
-              : 'linear-gradient(rgba(15,17,23,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(15,17,23,0.04) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
-
       {/* Top Navbar */}
       <Navbar
         indices={marketData.indices}
@@ -49,7 +32,7 @@ const App: React.FC = () => {
         onToggleSidebar={() => setSidebarCollapsed((p) => !p)}
       />
 
-      <div className="flex flex-1 overflow-hidden relative z-10">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <Sidebar
           activeView={activeView}
@@ -58,7 +41,7 @@ const App: React.FC = () => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden" style={{ background: '#0a0a0f' }}>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route

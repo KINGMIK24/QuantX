@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { BarChart2, TrendingUp, TrendingDown, Activity, Target } from 'lucide-react';
+import { BarChart2, TrendingUp, TrendingDown,  Target } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { Stock, MarketIndex } from '@/types';
 import { MOCK_SECTORS } from '@/utils/mockData';
@@ -22,11 +22,10 @@ interface AnalyticsProps {
 }
 
 const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  
   const [selectedStock, setSelectedStock] = useState('AAPL');
-  const accentColor = isDark ? '#00ff41' : '#0a84ff';
-  const muted = isDark ? 'rgba(176,184,204,0.5)' : '#9ca3af';
+  const accentColor = '#00c896';
+  const muted = 'rgba(176,184,204,0.5)';
 
   const ohlcvData = useMemo(() => generateOHLCVData(selectedStock), [selectedStock]);
 
@@ -55,7 +54,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
       risk: s.beta * 15,
       return: s.changePercent,
       vol: s.volume / s.avgVolume,
-      color: s.changePercent >= 0 ? accentColor : '#ff3b30',
+      color: s.changePercent >= 0 ? accentColor : '#ff4d4d',
     })),
     [stocks, accentColor],
   );
@@ -69,7 +68,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
         name: s.symbol,
         volume: Math.round(s.volume / 1e6),
         avg: Math.round(s.avgVolume / 1e6),
-        color: s.volume > s.avgVolume ? accentColor : '#ff9f0a',
+        color: s.volume > s.avgVolume ? accentColor : 'rgba(255, 255, 255, 0.2)',
       })),
     [stocks, accentColor],
   );
@@ -77,25 +76,25 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
   const selectedStockData = stocks.find((s) => s.symbol === selectedStock);
 
   return (
-    <div className={`p-4 space-y-4 ${isDark ? 'text-steel-200' : 'text-lm-text'}`}>
+    <div className="p-4 space-y-4 font-sans">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`font-display text-lg font-bold ${isDark ? 'text-steel-50' : 'text-lm-text'}`}>
+          <h1 className="font-sans font-semibold" style={{ fontSize: '20px', letterSpacing: '-0.02em', color: '#fff' }}>
             Analytics Suite
           </h1>
-          <p className={`font-mono mt-0.5 ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '10px' }}>
+          <p className="font-mono mt-0.5" style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.35)' }}>
             QUANTITATIVE ANALYSIS · MULTI-FACTOR MODELING
           </p>
         </div>
         {/* Stock selector */}
-        <div className={`flex items-center gap-1.5 border px-2 py-1 ${isDark ? 'border-steel-700/50' : 'border-lm-border'}`}>
-          <BarChart2 size={10} className={isDark ? 'text-acid-500' : 'text-signal-blue'} />
+        <div className="flex items-center gap-1.5 border px-2 py-1" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
+          <BarChart2 size={10} style={{ color: '#00c896' }} />
           <select
             value={selectedStock}
             onChange={(e) => setSelectedStock(e.target.value)}
-            className={`font-mono bg-transparent outline-none cursor-pointer ${isDark ? 'text-steel-200' : 'text-lm-text'}`}
-            style={{ fontSize: '10px' }}
+            className="font-mono bg-transparent outline-none cursor-pointer"
+            style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)' }}
           >
             {stocks.map((s) => (
               <option key={s.symbol} value={s.symbol}>{s.symbol}</option>
@@ -106,7 +105,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
 
       {/* KPI gauges row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card accent glowOnHover>
+        <Card  >
           <GaugeChart
             value={selectedStockData?.rsi ?? 50}
             label="RSI"
@@ -118,14 +117,14 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                   : 'NEUTRAL'
             }
             thresholds={[
-              { value: 30, color: '#0a84ff' },
+              { value: 30, color: '#e040fb' },
               { value: 50, color: '#ffd60a' },
-              { value: 70, color: '#ff9f0a' },
-              { value: 100, color: '#ff3b30' },
+              { value: 70, color: 'rgba(255, 255, 255, 0.2)' },
+              { value: 100, color: '#ff4d4d' },
             ]}
           />
         </Card>
-        <Card accent glowOnHover>
+        <Card  >
           <GaugeChart
             value={selectedStockData?.score ?? 50}
             label="AI Score"
@@ -137,30 +136,30 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                   : 'BEARISH'
             }
             thresholds={[
-              { value: 40, color: '#ff3b30' },
+              { value: 40, color: '#ff4d4d' },
               { value: 60, color: '#ffd60a' },
-              { value: 80, color: '#0a84ff' },
-              { value: 100, color: '#00ff41' },
+              { value: 80, color: '#e040fb' },
+              { value: 100, color: '#00c896' },
             ]}
           />
         </Card>
-        <Card accent glowOnHover>
+        <Card  >
           <GaugeChart
             value={62}
             label="Fear & Greed"
             sublabel="GREED ZONE"
           />
         </Card>
-        <Card accent glowOnHover>
+        <Card  >
           <GaugeChart
             value={16.84}
             label="VIX Index"
             sublabel="LOW VOLATILITY"
             thresholds={[
-              { value: 20, color: '#00ff41' },
+              { value: 20, color: '#00c896' },
               { value: 30, color: '#ffd60a' },
-              { value: 50, color: '#ff9f0a' },
-              { value: 100, color: '#ff3b30' },
+              { value: 50, color: 'rgba(255, 255, 255, 0.2)' },
+              { value: 100, color: '#ff4d4d' },
             ]}
           />
         </Card>
@@ -173,7 +172,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
           className="col-span-12 lg:col-span-8"
           title={`${selectedStock} PRICE ACTION`}
           subtitle="90-day close price history"
-          accent
+          
           noPadding
         >
           <div className="p-3 pt-2">
@@ -185,9 +184,9 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                     <div className="font-mono font-bold" style={{ color: accentColor, fontSize: '11px' }}>
                       {fmt.currency(selectedStockData.price)}
                     </div>
-                    <div className={`font-mono ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '9px' }}>
-                      {selectedStock} · {fmt.percent(selectedStockData.changePercent)} today
-                    </div>
+<div className="font-mono" style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '9px' }}>
+              {selectedStock} · {fmt.percent(selectedStockData.changePercent)} today
+            </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -197,13 +196,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                     { label: 'SMA200', value: selectedStockData.sma200 },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex flex-col">
-                      <span className={`font-mono ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '9px' }}>{label}</span>
-                      <span className={`font-mono font-bold text-xs ${isDark ? 'text-steel-300' : 'text-lm-text'}`}>{fmt.currency(value)}</span>
+                      <span style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.45)' }} className="font-mono">{label}</span>
+                      <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }} className="font-mono font-bold">{fmt.currency(value)}</span>
                     </div>
                   ))}
                   <div className="flex flex-col">
-                    <span className={`font-mono ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '9px' }}>ATR</span>
-                    <span className={`font-mono font-bold text-xs ${isDark ? 'text-steel-300' : 'text-lm-text'}`}>{selectedStockData.atr.toFixed(2)}</span>
+                    <span style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.45)' }} className="font-mono">ATR</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }} className="font-mono font-bold">{selectedStockData.atr.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -213,7 +212,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
         </Card>
 
         {/* Technical Summary */}
-        <Card className="col-span-12 lg:col-span-4" title="TECHNICAL SUMMARY" accent>
+        <Card className="col-span-12 lg:col-span-4" title="TECHNICAL SUMMARY">
           {selectedStockData && (
             <div className="space-y-2">
               {[
@@ -228,15 +227,15 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                 { label: 'Beta', value: selectedStockData.beta.toFixed(2), warn: selectedStockData.beta > 2 },
                 { label: 'AI Score', value: `${selectedStockData.score}/100`, isPos: selectedStockData.score >= 60 },
               ].map(({ label, value, warn, isPos }) => (
-                <div key={label} className={`flex items-center justify-between py-1 border-b ${isDark ? 'border-acid-500/5' : 'border-lm-border'}`}>
-                  <span className={`font-mono text-xs ${isDark ? 'text-steel-400' : 'text-lm-muted'}`}>{label}</span>
+                <div key={label} className="flex items-center justify-between py-1 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.04)' }}>
+                  <span className="font-mono text-xs" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>{label}</span>
                   {typeof value === 'string' ? (
-                    <span className={`font-mono text-xs font-bold ${
-                      warn ? 'text-signal-yellow' :
-                      isPos === true ? (isDark ? 'text-acid-500' : 'text-emerald-600') :
-                      isPos === false ? 'text-signal-red' :
-                      isDark ? 'text-steel-100' : 'text-lm-text'
-                    }`}>{value}</span>
+                    <span className="font-mono text-xs font-bold" style={{
+                      color: warn ? 'rgba(255, 255, 255, 0.4)' :
+                        isPos === true ? '#00c896' :
+                        isPos === false ? '#ff4d4d' :
+                        '#fff'
+                    }}>{value}</span>
                   ) : value}
                 </div>
               ))}
@@ -249,7 +248,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
           className="col-span-12 lg:col-span-6"
           title="SECTOR HEATMAP"
           subtitle="% change today | size = market cap"
-          accent
+          
           noPadding
         >
           <div className="p-3" style={{ height: '200px' }}>
@@ -262,13 +261,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
           className="col-span-12 lg:col-span-6"
           title="VOLUME LEADERS"
           subtitle="Current vs average volume (M shares)"
-          accent
+          
           noPadding
         >
           <div className="p-3">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={volumeData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="0" stroke={isDark ? 'rgba(0,255,65,0.05)' : 'rgba(0,0,0,0.05)'} horizontal vertical={false} />
+                <CartesianGrid strokeDasharray="0" stroke="rgba(0, 200, 150, 0.08)" horizontal vertical={false} />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
@@ -281,17 +280,17 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                   tick={{ fill: muted, fontSize: 9, fontFamily: 'JetBrains Mono' }}
                   tickFormatter={(v) => `${v}M`}
                 />
-                <Tooltip
+<Tooltip
                   formatter={(v: number) => [`${v}M`, '']}
                   contentStyle={{
-                    background: isDark ? '#0d0d1a' : '#fff',
-                    border: isDark ? '1px solid rgba(0,255,65,0.2)' : '1px solid #e5e7eb',
-                    fontFamily: 'JetBrains Mono',
+                    background: '#13131f',
+                    border: '1px solid rgba(0, 200, 150, 0.2)',
+                    fontFamily: 'Space Mono',
                     fontSize: '11px',
-                    color: isDark ? '#b0b8cc' : '#374151',
+                    color: 'rgba(255, 255, 255, 0.7)',
                   }}
                 />
-                <Bar dataKey="avg" fill={isDark ? '#242840' : '#e5e7eb'} radius={0} name="Avg" />
+                <Bar dataKey="avg" fill="#111119" radius={0} name="Avg" />
                 <Bar dataKey="volume" radius={0} name="Current">
                   {volumeData.map((entry, idx) => (
                     <Cell key={idx} fill={entry.color} fillOpacity={0.7} />
@@ -307,13 +306,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
           className="col-span-12 lg:col-span-7"
           title="RISK VS RETURN"
           subtitle="Beta (risk) vs daily % change (return)"
-          accent
+          
           noPadding
         >
           <div className="p-3">
             <ResponsiveContainer width="100%" height={220}>
               <ScatterChart margin={{ top: 4, right: 24, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="0" stroke={isDark ? 'rgba(0,255,65,0.05)' : 'rgba(0,0,0,0.05)'} />
+                <CartesianGrid strokeDasharray="0" stroke="rgba(0, 200, 150, 0.08)" />
                 <XAxis
                   dataKey="risk"
                   name="Beta × 15"
@@ -331,13 +330,20 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
                   tickFormatter={(v) => `${v.toFixed(1)}%`}
                 />
                 <ZAxis dataKey="vol" range={[30, 120]} />
-                <Tooltip
-                  cursor={{ strokeDasharray: '3 3', stroke: isDark ? 'rgba(0,255,65,0.2)' : 'rgba(0,0,0,0.1)' }}
+<Tooltip
+                  cursor={{ strokeDasharray: '3 3', stroke: 'rgba(0, 200, 150, 0.2)' }}
                   content={({ active, payload }) => {
                     if (!active || !payload?.[0]) return null;
                     const d = riskReturnData[payload[0].payload?.index as number] || (payload[0].payload as typeof riskReturnData[0]);
                     return (
-                      <div className={`font-mono text-xs p-2 border ${isDark ? 'bg-void-800 border-acid-500/20 text-steel-200' : 'bg-white border-lm-border text-lm-text shadow-md'}`}>
+                      <div style={{
+                        fontSize: '12px',
+                        padding: '8px',
+                        border: '1px solid rgba(0, 200, 150, 0.2)',
+                        background: '#13131f',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        fontFamily: 'Space Mono',
+                      }} className="font-mono">
                         <div className="font-bold">{d.name}</div>
                         <div>Return: {fmt.percent(d.return)}</div>
                       </div>
@@ -359,24 +365,27 @@ const Analytics: React.FC<AnalyticsProps> = ({ stocks, indices }) => {
           className="col-span-12 lg:col-span-5"
           title="INDEX PERFORMANCE"
           subtitle="Major market indices"
-          accent
+          
           noPadding
         >
           <div className="overflow-y-auto" style={{ maxHeight: '265px' }}>
             {indices.map((idx) => (
               <div
                 key={idx.symbol}
-                className={`flex items-center justify-between px-3 py-3 border-b transition-colors ${isDark ? 'border-acid-500/5 hover:bg-acid-500/4' : 'border-lm-border hover:bg-lm-bg'}`}
+                className="flex items-center justify-between px-3 py-3 border-b transition-colors"
+                style={{ borderColor: 'rgba(255, 255, 255, 0.04)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '')}
               >
                 <div>
-                  <div className={`font-mono text-xs font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>{idx.symbol}</div>
-                  <div className={`font-mono ${isDark ? 'text-steel-500' : 'text-lm-muted'}`} style={{ fontSize: '9px' }}>{idx.name}</div>
+                  <div className="font-mono font-bold" style={{ fontSize: '12px', color: '#fff' }}>{idx.symbol}</div>
+                  <div style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.45)' }} className="font-mono">{idx.name}</div>
                 </div>
                 <div className="text-right">
-                  <div className={`font-mono text-xs font-bold ${isDark ? 'text-steel-100' : 'text-lm-text'}`}>
+                  <div className="font-mono font-bold" style={{ fontSize: '12px', color: '#fff' }}>
                     {idx.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </div>
-                  <div className={`font-mono text-xs font-bold flex items-center justify-end gap-1 ${idx.changePercent >= 0 ? (isDark ? 'text-acid-500' : 'text-emerald-600') : 'text-signal-red'}`}>
+                  <div className="font-mono font-bold flex items-center justify-end gap-1" style={{ fontSize: '12px', color: idx.changePercent >= 0 ? '#00c896' : '#ff4d4d' }}>
                     {idx.changePercent >= 0 ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
                     {fmt.percent(idx.changePercent)}
                   </div>
